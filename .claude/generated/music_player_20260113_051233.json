@@ -1,0 +1,589 @@
+{
+  "container": {
+    "layout": "COL",
+    "background": "GLASS",
+    "padding": true,
+    "gap": true,
+    "animation": {
+      "type": "STAGGER_CONTAINER"
+    },
+    "children": [
+      {
+        "container": {
+          "layout": "ROW",
+          "gap": true,
+          "children": [
+            {
+              "card": {
+                "variant": "FROSTED",
+                "animation": {
+                  "type": "SCALE_ELASTIC",
+                  "delay": 0.1
+                },
+                "children": [
+                  {
+                    "image": {
+                      "src": "https://image.pollinations.ai/prompt/cyberpunk%20synthwave%20neon%20music%20album%20cover%20abstract%20geometric%20purple%20blue%20glow?width=400&height=400&nologo=true",
+                      "alt": "Album Cover",
+                      "aspectRatio": "SQUARE",
+                      "animation": {
+                        "type": "GLOW"
+                      }
+                    }
+                  },
+                  {
+                    "container": {
+                      "layout": "COL",
+                      "gap": true,
+                      "children": [
+                        {
+                          "text": {
+                            "content": "Midnight Echoes",
+                            "variant": "H2",
+                            "color": "#E0E7FF"
+                          }
+                        },
+                        {
+                          "text": {
+                            "content": "Neon Pulse",
+                            "variant": "BODY",
+                            "color": "#A5B4FC"
+                          }
+                        },
+                        {
+                          "container": {
+                            "layout": "ROW",
+                            "gap": true,
+                            "children": [
+                              {
+                                "badge": {
+                                  "label": "Synthwave",
+                                  "color": "#8B5CF6"
+                                }
+                              },
+                              {
+                                "badge": {
+                                  "label": "Electronic",
+                                  "color": "#06B6D4"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "container": {
+                "layout": "COL",
+                "gap": true,
+                "children": [
+                  {
+                    "bento_container": {
+                      "animation": {
+                        "type": "FADE_IN_UP",
+                        "delay": 0.2
+                      },
+                      "children": [
+                        {
+                          "bento_card": {
+                            "title": "Total Plays",
+                            "colSpan": 1,
+                            "rowSpan": 1,
+                            "children": [
+                              {
+                                "stat": {
+                                  "label": "This Month",
+                                  "value": "2.4M",
+                                  "trend": "+18%",
+                                  "trendDirection": "UP"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "bento_card": {
+                            "title": "Followers",
+                            "colSpan": 1,
+                            "rowSpan": 1,
+                            "children": [
+                              {
+                                "stat": {
+                                  "label": "Active",
+                                  "value": "156K",
+                                  "trend": "+5.2%",
+                                  "trendDirection": "UP"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "bento_card": {
+                            "title": "Duration",
+                            "colSpan": 2,
+                            "rowSpan": 1,
+                            "children": [
+                              {
+                                "text": {
+                                  "content": "42:18",
+                                  "variant": "H1",
+                                  "color": "#C4B5FD"
+                                }
+                              },
+                              {
+                                "text": {
+                                  "content": "Album Length",
+                                  "variant": "CAPTION",
+                                  "color": "#A78BFA"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "card": {
+          "variant": "GLASS",
+          "animation": {
+            "type": "FADE_IN_UP",
+            "delay": 0.3
+          },
+          "children": [
+            {
+              "container": {
+                "layout": "COL",
+                "gap": true,
+                "children": [
+                  {
+                    "text": {
+                      "content": "Now Playing",
+                      "variant": "CAPTION",
+                      "color": "#94A3B8"
+                    }
+                  },
+                  {
+                    "text": {
+                      "content": "Digital Dreams",
+                      "variant": "H3",
+                      "color": "#F1F5F9"
+                    }
+                  },
+                  {
+                    "slider": {
+                      "label": "",
+                      "min": 0,
+                      "max": 100,
+                      "value": 35,
+                      "step": 1
+                    }
+                  },
+                  {
+                    "container": {
+                      "layout": "ROW",
+                      "gap": true,
+                      "children": [
+                        {
+                          "text": {
+                            "content": "1:24",
+                            "variant": "CAPTION",
+                            "color": "#64748B"
+                          }
+                        },
+                        {
+                          "text": {
+                            "content": "4:02",
+                            "variant": "CAPTION",
+                            "color": "#64748B"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "container": {
+                      "layout": "ROW",
+                      "gap": true,
+                      "children": [
+                        {
+                          "button": {
+                            "label": "",
+                            "variant": "GHOST",
+                            "icon": "Shuffle"
+                          }
+                        },
+                        {
+                          "button": {
+                            "label": "",
+                            "variant": "SOFT",
+                            "icon": "SkipBack"
+                          }
+                        },
+                        {
+                          "button": {
+                            "label": "",
+                            "variant": "GLOW",
+                            "icon": "Play",
+                            "animation": {
+                              "type": "PULSE"
+                            },
+                            "action": {
+                              "type": "SHOW_TOAST",
+                              "payload": {
+                                "message": "Playing: Digital Dreams",
+                                "type": "SUCCESS"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "button": {
+                            "label": "",
+                            "variant": "SOFT",
+                            "icon": "SkipForward"
+                          }
+                        },
+                        {
+                          "button": {
+                            "label": "",
+                            "variant": "GHOST",
+                            "icon": "Repeat"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "container": {
+                      "layout": "ROW",
+                      "gap": true,
+                      "children": [
+                        {
+                          "button": {
+                            "label": "",
+                            "variant": "GHOST",
+                            "icon": "Volume2"
+                          }
+                        },
+                        {
+                          "slider": {
+                            "label": "",
+                            "min": 0,
+                            "max": 100,
+                            "value": 75,
+                            "step": 1
+                          }
+                        },
+                        {
+                          "button": {
+                            "label": "",
+                            "variant": "GHOST",
+                            "icon": "Heart"
+                          }
+                        },
+                        {
+                          "button": {
+                            "label": "",
+                            "variant": "GHOST",
+                            "icon": "ListMusic"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "tabs": {
+          "defaultValue": "playlist",
+          "variant": "UNDERLINE",
+          "animation": {
+            "type": "FADE_IN_UP",
+            "delay": 0.4
+          },
+          "items": [
+            {
+              "id": "playlist",
+              "label": "🎵 Playlist",
+              "content": {
+                "container": {
+                  "layout": "COL",
+                  "gap": true,
+                  "children": [
+                    {
+                      "table": {
+                        "headers": [
+                          "#",
+                          "Track",
+                          "Artist",
+                          "Album",
+                          "⏱"
+                        ],
+                        "rows": [
+                          [
+                            "1",
+                            "🎧 Digital Dreams",
+                            "Neon Pulse",
+                            "Midnight Echoes",
+                            "4:02"
+                          ],
+                          [
+                            "2",
+                            "🔊 Cyber Highway",
+                            "Neon Pulse",
+                            "Midnight Echoes",
+                            "3:45"
+                          ],
+                          [
+                            "3",
+                            "🎹 Retrowave Nights",
+                            "Neon Pulse",
+                            "Midnight Echoes",
+                            "5:12"
+                          ],
+                          [
+                            "4",
+                            "🌃 Tokyo Drift",
+                            "Neon Pulse",
+                            "Midnight Echoes",
+                            "4:28"
+                          ],
+                          [
+                            "5",
+                            "💜 Purple Rain 2099",
+                            "Neon Pulse",
+                            "Midnight Echoes",
+                            "3:58"
+                          ],
+                          [
+                            "6",
+                            "🌌 Starlight Boulevard",
+                            "Neon Pulse",
+                            "Midnight Echoes",
+                            "6:15"
+                          ],
+                          [
+                            "7",
+                            "🎵 Electric Soul",
+                            "Neon Pulse",
+                            "Midnight Echoes",
+                            "4:34"
+                          ],
+                          [
+                            "8",
+                            "🔮 Neon Prophecy",
+                            "Neon Pulse",
+                            "Midnight Echoes",
+                            "5:04"
+                          ]
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "id": "lyrics",
+              "label": "📝 Lyrics",
+              "content": {
+                "container": {
+                  "layout": "COL",
+                  "gap": true,
+                  "padding": true,
+                  "children": [
+                    {
+                      "text": {
+                        "content": "🎤 Digital Dreams - Lyrics",
+                        "variant": "H3",
+                        "color": "#C4B5FD"
+                      }
+                    },
+                    {
+                      "text": {
+                        "content": "Neon lights paint the midnight sky",
+                        "variant": "BODY",
+                        "color": "#E0E7FF"
+                      }
+                    },
+                    {
+                      "text": {
+                        "content": "Electric dreams, we were born to fly",
+                        "variant": "BODY",
+                        "color": "#E0E7FF"
+                      }
+                    },
+                    {
+                      "text": {
+                        "content": "Through the city's pulse, we ride the wave",
+                        "variant": "BODY",
+                        "color": "#A5B4FC"
+                      }
+                    },
+                    {
+                      "text": {
+                        "content": "In this digital world, we're never afraid",
+                        "variant": "BODY",
+                        "color": "#A5B4FC"
+                      }
+                    },
+                    {
+                      "text": {
+                        "content": "...",
+                        "variant": "BODY",
+                        "color": "#64748B"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "id": "related",
+              "label": "🎨 Related",
+              "content": {
+                "bento_container": {
+                  "children": [
+                    {
+                      "bento_card": {
+                        "title": "Similar Artists",
+                        "colSpan": 2,
+                        "rowSpan": 1,
+                        "children": [
+                          {
+                            "container": {
+                              "layout": "ROW",
+                              "gap": true,
+                              "children": [
+                                {
+                                  "avatar": {
+                                    "initials": "SW",
+                                    "status": "ONLINE"
+                                  }
+                                },
+                                {
+                                  "avatar": {
+                                    "initials": "CP",
+                                    "status": "OFFLINE"
+                                  }
+                                },
+                                {
+                                  "avatar": {
+                                    "initials": "NW",
+                                    "status": "BUSY"
+                                  }
+                                },
+                                {
+                                  "avatar": {
+                                    "initials": "ES",
+                                    "status": "ONLINE"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "bento_card": {
+                        "title": "Top Charts",
+                        "colSpan": 2,
+                        "rowSpan": 1,
+                        "bgImage": "https://image.pollinations.ai/prompt/synthwave%20music%20chart%20neon%20gradient%20abstract?width=400&height=200&nologo=true",
+                        "children": [
+                          {
+                            "badge": {
+                              "label": "#3 Electronic",
+                              "color": "#10B981"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "container": {
+          "layout": "ROW",
+          "gap": true,
+          "animation": {
+            "type": "FADE_IN_UP",
+            "delay": 0.5
+          },
+          "children": [
+            {
+              "button": {
+                "label": "Share",
+                "variant": "OUTLINE",
+                "icon": "Share2",
+                "action": {
+                  "type": "SHOW_TOAST",
+                  "payload": {
+                    "message": "Link copied to clipboard!",
+                    "type": "SUCCESS"
+                  }
+                }
+              }
+            },
+            {
+              "button": {
+                "label": "Add to Library",
+                "variant": "GRADIENT",
+                "icon": "Heart",
+                "animation": {
+                  "type": "HOVER_GROW"
+                },
+                "action": {
+                  "type": "SHOW_TOAST",
+                  "payload": {
+                    "message": "Added to your library!",
+                    "type": "SUCCESS"
+                  }
+                }
+              }
+            },
+            {
+              "button": {
+                "label": "Download",
+                "variant": "GLOW",
+                "icon": "Download",
+                "animation": {
+                  "type": "PULSE"
+                },
+                "action": {
+                  "type": "SHOW_TOAST",
+                  "payload": {
+                    "message": "Download started...",
+                    "type": "INFO"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

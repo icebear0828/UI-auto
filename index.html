@@ -1,93 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GenUI Architect</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-      /* 核心：极光背景动画 */
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Inter', sans-serif;
-        background-color: #050505; /* 深邃黑底 */
-        color: #f8fafc;
-        overflow-x: hidden;
-        min-height: 100vh;
-        position: relative;
-      }
 
-      /* 极光光斑 - 1 (紫色) */
-      .aurora-1 {
-        position: fixed;
-        top: -10%;
-        left: -10%;
-        width: 50vw;
-        height: 50vw;
-        background: radial-gradient(circle, rgba(76, 29, 149, 0.4) 0%, rgba(0,0,0,0) 70%);
-        filter: blur(80px);
-        animation: drift 20s infinite alternate ease-in-out;
-        z-index: -2;
-      }
-
-      /* 极光光斑 - 2 (靛蓝) */
-      .aurora-2 {
-        position: fixed;
-        bottom: -10%;
-        right: -10%;
-        width: 60vw;
-        height: 60vw;
-        background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, rgba(0,0,0,0) 70%);
-        filter: blur(100px);
-        animation: drift 25s infinite alternate-reverse ease-in-out;
-        z-index: -2;
-      }
-
-      /* 极光光斑 - 3 (青色) */
-      .aurora-3 {
-        position: fixed;
-        top: 30%;
-        left: 30%;
-        width: 40vw;
-        height: 40vw;
-        background: radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, rgba(0,0,0,0) 70%);
-        filter: blur(60px);
-        animation: float 18s infinite ease-in-out;
-        z-index: -2;
-      }
-
-      /* 噪点纹理 (增加质感) */
-      .noise-overlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-        opacity: 0.05;
-        pointer-events: none;
-        z-index: -1;
-      }
-
-      @keyframes drift {
-        0% { transform: translate(0, 0); }
-        100% { transform: translate(50px, 30px); }
-      }
-      
-      @keyframes float {
-        0% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(-30px, 20px) scale(1.1); }
-        100% { transform: translate(0, 0) scale(1); }
-      }
-
-      /* 自定义滚动条 */
-      ::-webkit-scrollbar { width: 6px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-      ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
-    </style>
-    <script type="importmap">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GenUI Architect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/src/index.css">
+  <script type="importmap">
 {
   "imports": {
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
@@ -99,17 +23,23 @@
     "zod": "https://aistudiocdn.com/zod@^3.22.4",
     "canvas-confetti": "https://aistudiocdn.com/canvas-confetti@^1.9.2",
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
-    "framer-motion": "https://aistudiocdn.com/framer-motion@^11.0.0"
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^11.0.0",
+    "path": "https://aistudiocdn.com/path@^0.12.7",
+    "vite": "https://aistudiocdn.com/vite@^7.2.7",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.2"
   }
 }
 </script>
-  </head>
-  <body>
-    <div class="aurora-1"></div>
-    <div class="aurora-2"></div>
-    <div class="aurora-3"></div>
-    <div class="noise-overlay"></div>
-    
-    <div id="root"></div>
-  </body>
+</head>
+
+<body>
+  <div class="aurora-1"></div>
+  <div class="aurora-2"></div>
+  <div class="aurora-3"></div>
+  <div class="grid-overlay"></div>
+  <div class="noise-overlay"></div>
+  <div id="root"></div>
+  <script type="module" src="/src/index.tsx"></script>
+</body>
+
 </html>

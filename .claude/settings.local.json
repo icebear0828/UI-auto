@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --version:*)",
+      "Bash(pnpm --version:*)",
+      "Bash(pnpm list:*)",
+      "Bash(pnpm dev)",
+      "Bash(python health_checker.py:*)",
+      "Bash(python rlaif_validator.py:*)",
+      "Bash(python upgrade_proposer.py:*)",
+      "Bash(python:*)",
+      "Bash(find:*)",
+      "Bash(pnpm test:*)",
+      "Bash(npx vitest:*)",
+      "Bash(echo:*)",
+      "Bash(where pnpm:*)",
+      "Bash(node:*)",
+      "Bash(D:)"
+    ]
+  }
+}

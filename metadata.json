@@ -1,5 +1,5 @@
 {
-  "name": "GenUI Architect",
+  "name": "Architect",
   "description": "A dynamic Generative UI engine that transforms natural language and user context into rendered React components using Gemini 2.5 Flash.",
   "requestFramePermissions": []
 }
