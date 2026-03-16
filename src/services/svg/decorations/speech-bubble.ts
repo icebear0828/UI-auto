@@ -24,7 +24,7 @@ registerAsset('speech_bubble', {
   type: 'decoration',
   render: ({ x, y, width: w = 150, text = '', color, scale }: AssetRenderProps) => {
     const c = color ?? '#94a3b8';
-    const fontSize = (scale ?? 1) * 13;
+    const fontSize = scale ?? 13;
     const bubbleW = w;
     const charsPerLine = Math.max(8, Math.floor(bubbleW / (fontSize * 0.5)));
     const lines = wrapText(text, charsPerLine);

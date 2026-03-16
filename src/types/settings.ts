@@ -27,7 +27,7 @@ export const DEFAULT_MODELS: Record<ProviderType, string> = {
 
 export const DEFAULT_CONFIG: ModelConfig = {
   provider: 'openai',
-  model: 'gpt-5.4-fast',
+  model: 'gpt5.2-fast',
   soundEnabled: true,
   providers: {
     gemini: { apiKey: '', baseUrl: '' },

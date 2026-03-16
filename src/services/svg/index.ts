@@ -7,3 +7,7 @@ import './decorations/arrow';
 // Re-export registry API
 export { registerAsset, getAsset, getAllAssets, resetAssets } from './registry';
 export type { SvgAssetDef, AssetRenderProps } from './types';
+
+// Re-export layout engine
+export { layoutElements } from './layout';
+export type { LayoutItem } from './layout';

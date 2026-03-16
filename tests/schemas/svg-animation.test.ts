@@ -22,130 +22,122 @@ describe('JSON Schema compatibility', () => {
 });
 
 // ============================================================
-// Template-based schema
+// New scene-orchestration schema (elements-based)
 // ============================================================
 
-describe('SvgAnimationPropsSchema', () => {
-  it('should parse tutorial_step template', () => {
+describe('SvgAnimationPropsSchema — elements-based', () => {
+  it('should parse a scene with elements array', () => {
+    const result = SvgAnimationNode.safeParse({
+      svg_animation: {
+        title: 'How Prompts Work',
+        elements: [
+          { asset: 'stickman', pose: 'point', position: 'left', label: 'User' },
+          { asset: 'speech_bubble', anchor: 'above-last', text: 'Write clearly!' },
+          { asset: 'arrow', from: 'left', to: 'center', style: 'flow' },
+          { asset: 'gear', position: 'center', animate: 'spin', label: 'AI Core' },
+          { asset: 'arrow', from: 'center', to: 'right', style: 'flow' },
+          { asset: 'check', position: 'right', label: 'Output' },
+          { asset: 'speech_bubble', anchor: 'above-last', text: 'Perfect result!' },
+        ],
+      },
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.svg_animation.elements).toHaveLength(7);
+      expect(result.data.svg_animation.elements[0].asset).toBe('stickman');
+    }
+  });
+
+  it('should default elements to empty array', () => {
+    const result = SvgAnimationPropsSchema.safeParse({});
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.elements).toEqual([]);
+      expect(result.data.sequence).toBe(true);
+    }
+  });
+
+  it('should accept size hints on elements', () => {
+    const result = SvgAnimationPropsSchema.safeParse({
+      elements: [
+        { asset: 'gear', position: 'center', size: 'large' },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('should tolerate extra fields via passthrough', () => {
+    const result = SvgAnimationPropsSchema.safeParse({
+      unknownField: 'streaming',
+      elements: [{ asset: 'check', customProp: true }],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('should reject element missing asset field', () => {
+    const result = SvgAnimationPropsSchema.safeParse({
+      elements: [{ position: 'left' }],
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+// ============================================================
+// Raw SVG code mode
+// ============================================================
+
+describe('SvgAnimationPropsSchema — svg_code mode', () => {
+  it('should parse svg_code string', () => {
+    const result = SvgAnimationNode.safeParse({
+      svg_animation: {
+        title: 'What is an API?',
+        svg_code: '<svg viewBox="0 0 1000 562"><rect width="1000" height="562" fill="#0f172a"/></svg>',
+      },
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.svg_animation.svg_code).toContain('<svg');
+    }
+  });
+
+  it('should accept svg_code with no other fields', () => {
+    const result = SvgAnimationPropsSchema.safeParse({
+      svg_code: '<svg viewBox="0 0 1000 562"></svg>',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('should accept svg_code alongside title', () => {
+    const result = SvgAnimationPropsSchema.safeParse({
+      title: 'My Scene',
+      svg_code: '<svg></svg>',
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.title).toBe('My Scene');
+      expect(result.data.svg_code).toBe('<svg></svg>');
+    }
+  });
+});
+
+// ============================================================
+// Backward compatibility — old template-based schema
+// ============================================================
+
+describe('SvgAnimationPropsSchema — backward compat (template)', () => {
+  it('should still accept template field for old data', () => {
     const result = SvgAnimationNode.safeParse({
       svg_animation: {
         template: 'tutorial_step',
-        title: 'How Prompts Work',
-        step: 'Step 1',
+        title: 'Old scene',
         character: { pose: 'point', label: 'User' },
-        content: 'First, describe what you want the AI to do.',
-        icon: 'lightbulb',
+        content: 'Legacy content',
+        step: 'Step 1',
       },
     });
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.svg_animation.template).toBe('tutorial_step');
-      expect(result.data.svg_animation.character?.pose).toBe('point');
     }
-  });
-
-  it('should parse comparison template', () => {
-    const result = SvgAnimationNode.safeParse({
-      svg_animation: {
-        template: 'comparison',
-        title: 'Good vs Bad Prompts',
-        left: { title: 'Good', points: ['Be specific', 'Give context'] },
-        right: { title: 'Bad', points: ['Too vague', 'No context'] },
-      },
-    });
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.svg_animation.left?.points).toHaveLength(2);
-    }
-  });
-
-  it('should parse flowchart template', () => {
-    const result = SvgAnimationNode.safeParse({
-      svg_animation: {
-        template: 'flowchart',
-        title: 'AI Pipeline',
-        steps: [
-          { label: 'Input', description: 'User prompt' },
-          { label: 'Process', description: 'LLM generates', icon: 'gear' },
-          { label: 'Output', description: 'UI rendered', icon: 'check' },
-        ],
-      },
-    });
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.svg_animation.steps).toHaveLength(3);
-    }
-  });
-
-  it('should parse dialog_scene template', () => {
-    const result = SvgAnimationNode.safeParse({
-      svg_animation: {
-        template: 'dialog_scene',
-        characters: [
-          { pose: 'wave', label: 'Alice', dialog: 'Hi!' },
-          { pose: 'think', label: 'Bob', dialog: 'Hmm...' },
-        ],
-      },
-    });
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.svg_animation.characters).toHaveLength(2);
-    }
-  });
-
-  it('should parse highlight_concept template', () => {
-    const result = SvgAnimationNode.safeParse({
-      svg_animation: {
-        template: 'highlight_concept',
-        concept: 'Context is Key',
-        description: 'Always provide background information.',
-        icon: 'lightbulb',
-        points: ['Who', 'What', 'Why'],
-      },
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it('should parse timeline template', () => {
-    const result = SvgAnimationNode.safeParse({
-      svg_animation: {
-        template: 'timeline',
-        title: 'Project History',
-        events: [
-          { label: '2024', description: 'Started' },
-          { label: '2025', description: 'Launched', icon: 'check' },
-        ],
-      },
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it('should fill defaults', () => {
-    const result = SvgAnimationPropsSchema.safeParse({ template: 'tutorial_step' });
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.sequence).toBe(true);
-      expect(result.data.background).toBeUndefined();
-    }
-  });
-
-  it('should reject invalid template name', () => {
-    const result = SvgAnimationPropsSchema.safeParse({ template: 'nonexistent' });
-    expect(result.success).toBe(false);
-  });
-
-  it('should tolerate extra fields via passthrough', () => {
-    const result = SvgAnimationPropsSchema.safeParse({
-      template: 'tutorial_step',
-      unknownField: 'streaming',
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it('should reject missing template field', () => {
-    const result = SvgAnimationPropsSchema.safeParse({
-      title: 'No template',
-    });
-    expect(result.success).toBe(false);
   });
 });

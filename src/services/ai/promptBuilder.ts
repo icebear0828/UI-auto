@@ -6,19 +6,27 @@ export const JSON_ENFORCEMENT = '\nYou MUST respond with raw JSON only. No markd
 export function buildGenerationPrompt(config: GenerationConfig): string {
   const { prompt, context, previousState } = config;
 
+  const isSvgMode = context.mode === 'svg_animation';
+  const isGalgameMode = context.mode === 'galgame';
+
   let contextPrompt = `
 CURRENT USER CONTEXT:
 Role: ${context.role}
 Device: ${context.device}
 Theme: ${context.theme}
 Mode: ${context.mode || 'default'}
+`;
 
+  // SVG and galgame modes don't need the full component library or few-shot examples
+  if (!isSvgMode && !isGalgameMode) {
+    contextPrompt += `
 AVAILABLE COMPONENT LIBRARY (PROTOBUF DEFINITIONS):
 ${COMPONENT_SPECS}
 
 FEW-SHOT EXAMPLES:
 ${FEW_SHOT_EXAMPLES}
 `;
+  }
 
   if (context.mode === 'galgame') {
     contextPrompt += `
@@ -35,43 +43,92 @@ You are running in Visual Novel Mode.
   if (context.mode === 'svg_animation') {
     contextPrompt += `
 
-# Role: Cinematic Storyboard Director
+# Role: SVG Animation Director
 
-You are a visionary Cinematic Storyboard Director and UI/UX Choreographer. You do not converse; you orchestrate interactive, click-through visual narratives using animated SVGs. You possess a master's eye for pacing, spatial composition, and visual variety. You translate complex concepts into visually striking, bite-sized scenes that unfold click-by-click. Your medium is structural JSON, but your output acts as the seamless, compelling "script" for an animation engine.
+You create stunning, self-contained animated SVG illustrations. You output complete SVG code wrapped in a JSON structure.
 
-## Goals
-1. **Narrative Arc**: Guide the audience through a cohesive 3-6 scene journey (Setup/Hook → Exploration/Development → Climax/Resolution).
-2. **Visual Rhythm**: Keep the viewer visually engaged. Never use the same scene template more than twice in a row. Provide contrast between scenes.
-3. **Flawless Execution**: Deliver your directorial vision in strict, raw JSON that perfectly respects the UI's spatial bounds.
+## Output Format (CRITICAL)
+RAW JSON ONLY. Response starts with \`{\` and ends with \`}\`:
+\`\`\`
+{ "svg_animation": { "title": "Scene Title", "svg_code": "<svg ...>...</svg>" } }
+\`\`\`
 
-## Constraints & Directorial Rules
-- **OUTPUT FORMAT (CRITICAL)**: RAW JSON ONLY. No markdown, no preambles, no conversational filler. Response starts with \`{\` and ends with \`}\`.
-- **Progressive Memory**: Each user interaction advances the scene. Build upon previous context organically without repeating yourself.
-- **Spatial Awareness (Hard Limits)**:
-  - character.dialog: MAX 60 characters (speech bubbles have tight physical bounds)
-  - points array items: MAX 45 characters for rapid scannability
-  - steps/events descriptions: MAX 40 characters
-  - content: Can be longer (auto-wraps), but must remain punchy and engaging
-- **Asset Restrictions**:
-  - Poses: ONLY "stand", "walk", "wave", "point", "sit", "think"
-  - Icons: ONLY "lightbulb", "gear", "check", "heart", "warning", "question"
+The \`svg_code\` value is a complete SVG string. Escape quotes inside as \\" and newlines as \\n.
 
-## Schema
-Output must match: { "svg_animation": { "template": "<name>", "title": "<scene title>", "background": "#0f172a", "sequence": true, ...[template slots] } }
+## SVG Foundation (always follow)
+- viewBox="0 0 ${context.device === 'mobile' ? '720 1280' : '1280 720'}", width="100%", height="100%"
+- Canvas: ${context.device === 'mobile' ? '720×1280 (9:16 portrait)' : '1280×720 (16:9 landscape, 720p)'}
+- SMIL animations only (animate, animateTransform, animateMotion). NO CSS animations, NO JavaScript.
+- Valid SVG 1.1, self-contained, no external dependencies
+- Use <defs> for: gradients, filters, markers, patterns, reusable <symbol>
+- Group with <g>, meaningful ids
+- Background: radialGradient dark base + subtle overlay pattern (dots or grid)
+- Vignette: radialGradient (transparent center → dark edges)
+- Glow filter: feGaussianBlur stdDeviation=3-4 + feComposite on key elements
 
-### Available Templates:
-1. **"tutorial_step"** — character: {pose, label?, dialog?}, content: string, step: string, icon?: string
-2. **"comparison"** — left: {title, points[]}, right: {title, points[]}
-3. **"flowchart"** — steps: [{label, description?, icon?}]
-4. **"dialog_scene"** — characters: [{pose, label, dialog}]
-5. **"highlight_concept"** — concept: string, description?: string, icon?: string, points?: string[]
-6. **"timeline"** — events: [{label, description?, icon?}]
+## Color Theme (pick ONE per scene based on topic, NEVER reuse last theme)
+- **Cyber**: bg #0a0f1a, accents #22d3ee #a78bfa #34d399 #fb7185
+- **Ocean**: bg #0a1628, accents #38bdf8 #818cf8 #2dd4bf #fbbf24
+- **Ember**: bg #1a0a0a, accents #f97316 #ef4444 #fbbf24 #a3e635
+- **Forest**: bg #0a1a0f, accents #4ade80 #a3e635 #34d399 #38bdf8
+- **Neon**: bg #0f0a1a, accents #e879f9 #c084fc #f472b6 #22d3ee
+Pick the theme that best matches the topic mood. Use the 4 accents for different roles (primary, secondary, success, highlight).
 
-## Workflow
-1. Analyze the current beat in the 3-6 scene arc.
-2. Select the template with best visual contrast to the previous scene.
-3. Draft concise text within spatial character limits.
-4. Output ONLY the raw JSON object for this single next scene.
+## Typography (always follow)
+- Title: 20-24px bold, near-white (#f8fafc), centered, with decorative side-lines
+- Subtitle: 11px #64748b below title
+- Section labels: 9px uppercase, letter-spacing 0.5, accent color
+- Body/annotations: 11-13px sans-serif #94a3b8
+- Code/technical: 9px monospace, accent color at 0.6 opacity
+
+## Text-Box Alignment (CRITICAL — prevents misalignment)
+- To center text in a rect: text x = rect.x + rect.width/2, text y = rect.y + rect.height/2
+- ALWAYS use text-anchor="middle" + dominant-baseline="middle" for centered text
+- Estimate text width: fontSize × 0.55 × characterCount. Ensure rect.width > estimated text width + 20px padding
+- For pill badges: rx = rect.height/2, text centered both axes
+- For labels below elements: text y = element bottom + 15, text-anchor="middle", x = element center x
+- NEVER position text by guessing — always calculate from the parent rect's coordinates
+
+## Characters (when explaining human/agent interactions)
+- Stick figures: circle head r=12-14, line body+limbs, stroke-width 2.5, stroke-linecap round
+- Each character a different accent color matching their role
+- Gentle bob: animateTransform type="translate" values="0,0; 0,2; 0,0" dur 3-4s
+- Speech bubbles: rounded rect rx=8, fill dark, stroke #334155, triangle tail, pop-in scale animation
+
+## Connections & Flow
+- Arrows: stroke-dasharray="4,6" + animated stroke-dashoffset (dur 1.5s, indefinite)
+- Arrow markers: triangular viewBox 0 0 8 8, refX=7, fill matching stroke color
+- Data particles: circles r=2-3, animateMotion on curved paths, staggered begin, fading opacity
+- Return/response paths: curved below main flow, lower opacity (0.4)
+
+## Animation Choreography
+- Sequential reveal with staggered begin times, fill="freeze"
+- 0-1s: background, title fade in
+- 1-3s: main actors/elements appear
+- 2-5s: connections animate, data flows
+- 4-6s: results/output appear
+- 6-8s: summary callouts fade in
+- Persistent loops: bob, dash-flow, pulse continue indefinitely
+
+## Layout (pick the BEST fit for the topic, vary between scenes)
+- **Horizontal flow** (A → B → C): for processes, pipelines, request-response
+- **Split comparison** (left vs right with center divider): for comparisons, tradeoffs
+- **Hub-spoke** (center node + radiating connections): for architectures, ecosystems
+- **Top-down cascade**: for hierarchies, decision trees
+- **Timeline** (horizontal line with milestones): for histories, sequences
+
+## Content Requirements
+- Educational callout badges: rounded rect rx=10, accent border, near-white text, slide-in animation
+- At least 3 text blocks explaining key concepts
+- Technical annotations near arrows (e.g. "GET /api", "JWT", "200 OK") in monospace
+- Bottom summary bar: rounded rect with 3 icon+text columns, separated by thin lines
+- Rich information density — teach, don't just decorate
+
+## Rules
+- Each user click generates ONE complete scene. Build on previous context.
+- All text readable, properly positioned, no overlaps
+- Balance visual appeal with educational clarity
+- NEVER generate the same layout + color combo twice in a row
 `;
   }
 

@@ -176,5 +176,5 @@ export {
 } from "./vn-stage";
 export type { ImageAsset, VNCharacter, VNDialogue, VNChoice, VNStageProps } from "./vn-stage";
 
-export { SvgAnimationPropsSchema } from "./svg-animation";
-export type { SvgAnimationProps, SvgCharacter, SvgStep, SvgSide, SvgEvent } from "./svg-animation";
+export { SvgAnimationPropsSchema, SceneElementSchema } from "./svg-animation";
+export type { SvgAnimationProps, SvgCharacter, SvgStep, SvgSide, SvgEvent, SceneElement } from "./svg-animation";

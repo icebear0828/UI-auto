@@ -1,5 +1,29 @@
 import { z } from "zod";
 
+// ============================================================
+// Scene Element — the atomic unit of the orchestration engine
+// ============================================================
+
+export const SceneElementSchema = z.object({
+  asset: z.string(),
+  position: z.string().optional(),
+  anchor: z.string().optional(),
+  pose: z.string().optional(),
+  label: z.string().optional(),
+  text: z.string().optional(),
+  animate: z.string().optional(),
+  from: z.string().optional(),
+  to: z.string().optional(),
+  style: z.string().optional(),
+  size: z.string().optional(),
+}).passthrough();
+
+export type SceneElement = z.infer<typeof SceneElementSchema>;
+
+// ============================================================
+// Legacy sub-schemas (backward compat for old template data)
+// ============================================================
+
 const SvgCharacterSchema = z.object({
   pose: z.enum(['stand', 'walk', 'wave', 'point', 'sit', 'think']).optional().default('stand'),
   label: z.string().optional(),
@@ -23,20 +47,23 @@ const SvgEventSchema = z.object({
   icon: z.string().optional(),
 }).passthrough();
 
+// ============================================================
+// Main Props Schema — new elements-based + legacy template fields
+// ============================================================
+
 export const SvgAnimationPropsSchema = z.object({
-  template: z.enum([
-    'tutorial_step',
-    'comparison',
-    'flowchart',
-    'dialog_scene',
-    'highlight_concept',
-    'timeline',
-  ]),
   title: z.string().optional(),
   background: z.string().optional(),
   sequence: z.boolean().optional().default(true),
 
-  // Content slots (each template uses a subset)
+  // New: raw SVG code (AI-generated)
+  svg_code: z.string().optional(),
+
+  // Scene orchestration (elements-based)
+  elements: z.array(SceneElementSchema).optional().default([]),
+
+  // Legacy: template-based (backward compat)
+  template: z.string().optional(),
   character: SvgCharacterSchema.optional(),
   characters: z.array(SvgCharacterSchema).optional(),
   content: z.string().optional(),
