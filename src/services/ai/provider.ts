@@ -1,33 +1,56 @@
-/**
- * AI Provider Singleton Factory
- *
- * Single entry point for obtaining the AI provider instance.
- * Currently uses GeminiProvider; swap implementation here to change providers.
- */
-
 import type { IAIProvider } from './IAIProvider';
+import type { ModelConfig } from '@/types/settings';
+import { getEffectiveApiKey } from '@/types/settings';
 import { GeminiProvider } from './GeminiProvider';
+import { OpenAIProvider } from './OpenAIProvider';
+import { AnthropicProvider } from './AnthropicProvider';
 
+let _config: ModelConfig | null = null;
 let _instance: IAIProvider | null = null;
+let _cacheKey = '';
 
-/**
- * Returns the singleton AI provider instance.
- * Creates it on first call using the API key from environment.
- */
+function buildCacheKey(config: ModelConfig): string {
+  const apiKey = getEffectiveApiKey(config);
+  const baseUrl = config.providers[config.provider].baseUrl;
+  return `${config.provider}:${apiKey}:${baseUrl}`;
+}
+
+export function setActiveConfig(config: ModelConfig): void {
+  const key = buildCacheKey(config);
+  if (key !== _cacheKey) {
+    _instance = null;
+    _cacheKey = key;
+  }
+  _config = config;
+}
+
 export function getAIProvider(): IAIProvider {
+  if (!_config) {
+    throw new Error('AI provider not configured. Call setActiveConfig() first.');
+  }
   if (!_instance) {
-    const apiKey = process.env.API_KEY;
+    const apiKey = getEffectiveApiKey(_config);
     if (!apiKey) {
-      throw new Error('API Key must be configured in environment variables (API_KEY)');
+      throw new Error(`API key not configured for provider: ${_config.provider}`);
     }
-    _instance = new GeminiProvider(apiKey);
+    const baseUrl = _config.providers[_config.provider].baseUrl || undefined;
+    switch (_config.provider) {
+      case 'gemini':
+        _instance = new GeminiProvider(apiKey, baseUrl);
+        break;
+      case 'openai':
+        _instance = new OpenAIProvider(apiKey, baseUrl);
+        break;
+      case 'anthropic':
+        _instance = new AnthropicProvider(apiKey, baseUrl);
+        break;
+    }
   }
   return _instance;
 }
 
-/**
- * Reset the provider instance (useful for testing).
- */
 export function resetAIProvider(): void {
   _instance = null;
+  _config = null;
+  _cacheKey = '';
 }

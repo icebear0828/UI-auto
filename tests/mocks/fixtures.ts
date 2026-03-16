@@ -141,8 +141,15 @@ export const adminContext: UserContext = {
 // ============================================================
 
 export const defaultConfig: ModelConfig = {
+    provider: 'gemini',
     model: 'gemini-3-flash-preview',
-    soundEnabled: true
+    soundEnabled: true,
+    providers: {
+        gemini: { apiKey: '', baseUrl: '' },
+        openai: { apiKey: '', baseUrl: '' },
+        anthropic: { apiKey: '', baseUrl: '' },
+    },
+    imageProvider: { baseUrl: '', apiKey: '', model: '' },
 };
 
 // ============================================================

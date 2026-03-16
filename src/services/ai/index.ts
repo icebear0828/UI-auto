@@ -1,9 +1,3 @@
-/**
- * AI Provider Index
- *
- * Re-exports AI provider interface, implementations, and factory
- */
-
 export type {
     IAIProvider,
     GenerationConfig,
@@ -13,4 +7,6 @@ export type {
 } from './IAIProvider';
 
 export { GeminiProvider } from './GeminiProvider';
-export { getAIProvider, resetAIProvider } from './provider';
+export { OpenAIProvider } from './OpenAIProvider';
+export { AnthropicProvider } from './AnthropicProvider';
+export { getAIProvider, resetAIProvider, setActiveConfig } from './provider';

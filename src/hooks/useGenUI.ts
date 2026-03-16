@@ -10,7 +10,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { UserContext, UINode } from '@/types';
 import { INITIAL_CONTEXT } from '@/constants';
-import { ModelConfig, DEFAULT_CONFIG } from '@/types/settings';
+import { ModelConfig, DEFAULT_CONFIG, ProviderType } from '@/types/settings';
+import { setActiveConfig } from '@/services/ai';
+import { setImageConfig } from '@/services/image';
 import { useToast } from '@/components/ui/Toast';
 import { useActionDispatcher } from './useActionDispatcher';
 import { useMessageState } from './useMessageState';
@@ -27,11 +29,20 @@ export const useGenUI = () => {
 
   const { showToast } = useToast();
 
-  // Settings State
+  // Settings State (with migration from old format)
   const [config, setConfigState] = useState<ModelConfig>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : DEFAULT_CONFIG;
+      if (!saved) return DEFAULT_CONFIG;
+      const parsed = JSON.parse(saved) as Record<string, unknown>;
+      if ('provider' in parsed && 'providers' in parsed) {
+        return { ...DEFAULT_CONFIG, ...parsed as unknown as ModelConfig };
+      }
+      return {
+        ...DEFAULT_CONFIG,
+        model: (parsed.model as string) ?? DEFAULT_CONFIG.model,
+        soundEnabled: (parsed.soundEnabled as boolean) ?? DEFAULT_CONFIG.soundEnabled,
+      };
     } catch {
       return DEFAULT_CONFIG;
     }
@@ -41,6 +52,14 @@ export const useGenUI = () => {
     setConfigState(newConfig);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newConfig));
   };
+
+  // Sync AI provider + image provider config
+  useEffect(() => {
+    setActiveConfig(config);
+    if (config.imageProvider) {
+      setImageConfig(config.imageProvider);
+    }
+  }, [config]);
 
   // --- Sub-hooks ---
   const messageState = useMessageState();

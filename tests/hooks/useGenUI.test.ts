@@ -26,7 +26,8 @@ vi.mock('@/services/ai', () => ({
         generateStream: mockGenerateStream,
         refine: mockRefine,
         fix: mockFix,
-    })
+    }),
+    setActiveConfig: vi.fn(),
 }));
 
 vi.mock('@/services/tools', () => ({
@@ -131,7 +132,10 @@ describe('useGenUI', () => {
 
             const { result } = renderHook(() => useGenUI(), { wrapper });
 
-            expect(result.current.state.config).toEqual(savedConfig);
+            // Old format is migrated to new format
+            expect(result.current.state.config.model).toBe('custom-model');
+            expect(result.current.state.config.soundEnabled).toBe(false);
+            expect(result.current.state.config.provider).toBeDefined();
         });
 
         it('should use default config if localStorage is empty', () => {
@@ -184,7 +188,17 @@ describe('useGenUI', () => {
         it('should update config and save to localStorage', () => {
             const { result } = renderHook(() => useGenUI(), { wrapper });
 
-            const newConfig = { model: 'new-model', soundEnabled: false };
+            const newConfig: import('@/types/settings').ModelConfig = {
+                provider: 'openai',
+                model: 'new-model',
+                soundEnabled: false,
+                providers: {
+                    gemini: { apiKey: '', baseUrl: '' },
+                    openai: { apiKey: 'test-key', baseUrl: '' },
+                    anthropic: { apiKey: '', baseUrl: '' },
+                },
+                imageProvider: { baseUrl: '', apiKey: '', model: '' },
+            };
 
             act(() => {
                 result.current.actions.setConfig(newConfig);

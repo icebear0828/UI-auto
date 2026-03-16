@@ -67,10 +67,6 @@ export interface IAIProvider {
      */
     fix(config: FixConfig): Promise<UINode>;
 
-    /**
-     * Generate an image (optional - not all providers support this)
-     */
-    generateImage?(prompt: string, style?: string): Promise<string>;
 }
 
 /**
