@@ -58,6 +58,9 @@ const Table = safeLazy(() => import('./Table'), 'Table');
 // VNStage: Load safely from the galgame module
 const VNStage = safeLazy(() => import('../galgame/VNStage'), 'VNStage');
 
+// SvgAnimation: Animated SVG scenes
+const SvgAnimation = safeLazy(() => import('../svg/SvgAnimation'), 'SvgAnimation');
+
 /* -------------------------------------------------------------------------- */
 /*                            COMPONENT REGISTRY MAP                          */
 /* -------------------------------------------------------------------------- */
@@ -92,7 +95,8 @@ export const ComponentRegistry: Record<string, React.FC<any>> = {
   codeblock: CodeBlock, 
   split_pane: SplitPane, 
   calendar: Calendar, 
-  vn_stage: VNStage, 
+  vn_stage: VNStage,
+  svg_animation: SvgAnimation,
 
   // Lazy Components
   chart: ChartComponent,

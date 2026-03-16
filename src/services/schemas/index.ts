@@ -10,6 +10,7 @@ import {
   TabsNode, StepperNode, TimelineNode, CodeBlockNode,
 } from "./composite";
 import { VNStageNode } from "./vn-stage";
+import { SvgAnimationNode } from "./svg-animation";
 
 // Import types needed for TypedUINode
 import type { ContainerProps } from "./layout";
@@ -23,6 +24,7 @@ import type {
   TabsProps, StepperProps, TimelineProps, CodeBlockProps,
 } from "./composite";
 import type { VNStageProps } from "./vn-stage";
+import type { SvgAnimationProps } from "./svg-animation";
 
 // Import validateNode factory and re-export with bound schema
 import { validateNode as _validateNode, isComponentType, getComponentProps } from "./validation";
@@ -65,6 +67,7 @@ export const UINodeSchema: z.ZodType<any> = z.lazy(() =>
     SplitPaneNode,
     CalendarNode,
     VNStageNode,
+    SvgAnimationNode,
   ])
 );
 
@@ -108,7 +111,8 @@ export type TypedUINode =
   | { codeblock: CodeBlockProps }
   | { split_pane: SplitPaneProps }
   | { calendar: CalendarProps }
-  | { vn_stage: VNStageProps };
+  | { vn_stage: VNStageProps }
+  | { svg_animation: SvgAnimationProps };
 
 export type ComponentTypeKey = keyof TypedUINode extends infer K
   ? K extends string ? K : never
@@ -121,7 +125,7 @@ export type ValidComponentType =
   | 'textarea' | 'badge' | 'separator' | 'bento_container'
   | 'bento_card' | 'kanban' | 'switch' | 'slider' | 'tabs'
   | 'stepper' | 'timeline' | 'codeblock' | 'split_pane'
-  | 'calendar' | 'vn_stage';
+  | 'calendar' | 'vn_stage' | 'svg_animation';
 
 // ----------------------------------------------------------------------
 // RE-EXPORT ALL from sub-modules
@@ -171,3 +175,6 @@ export {
   VNDialogueSchema, VNChoiceSchema, VNStagePropsSchema,
 } from "./vn-stage";
 export type { ImageAsset, VNCharacter, VNDialogue, VNChoice, VNStageProps } from "./vn-stage";
+
+export { SvgAnimationPropsSchema } from "./svg-animation";
+export type { SvgAnimationProps, SvgCharacter, SvgStep, SvgSide, SvgEvent } from "./svg-animation";

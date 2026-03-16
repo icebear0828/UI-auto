@@ -226,4 +226,22 @@ Each node MUST be an object with EXACTLY ONE key (the component name).
       - dialogue: { speaker: string, content: string, speed: "SLOW" | "NORMAL" | "FAST" }
       - choices: Array<{ label: string, action: Action, style?: "DEFAULT" | "AGGRESSIVE" | "ROMANTIC" }>
       - bgm: string (optional)
+
+31. "svg_animation" (Animated SVG Scene — template-based, auto-layout)
+    - TEMPLATE BASED: Pick a template, fill in content. Layout is automatic, NO coordinates needed.
+    - Props:
+      - template: "tutorial_step" | "comparison" | "flowchart" | "dialog_scene" | "highlight_concept" | "timeline" (REQUIRED)
+      - title: string (scene title)
+      - background: string (CSS color, default "#0f172a")
+      - sequence: boolean (default true, elements animate in order)
+    - Template-specific content slots:
+      * "tutorial_step": character: {pose, label}, content: string, step: string, icon?: string
+      * "comparison": left: {title, points: string[]}, right: {title, points: string[]}
+      * "flowchart": steps: Array<{label, description?, icon?}>
+      * "dialog_scene": characters: Array<{pose, label, dialog}>
+      * "highlight_concept": concept: string, description?: string, icon?: string, points?: string[]
+      * "timeline": events: Array<{label, description?, icon?}>
+    - Pose options: "stand" | "walk" | "wave" | "point" | "sit" | "think"
+    - Icon options: "lightbulb" | "gear" | "check" | "heart" | "warning" | "question"
+    - Use for: tutorials, diagrams, comparisons, visual storytelling, flowcharts, timelines
 `;

@@ -34,6 +34,11 @@ export type {
   SplitPaneProps,
   CalendarProps,
   VNStageProps,
+  SvgAnimationProps,
+  SvgCharacter,
+  SvgStep,
+  SvgSide,
+  SvgEvent,
   // Sub-types
   AnimationType,
   ValidationConfig,
@@ -76,7 +81,7 @@ export interface UserContext {
   role: 'admin' | 'user';
   device: 'desktop' | 'mobile';
   theme: 'dark' | 'light';
-  mode?: 'default' | 'galgame'; // NEW: App Mode
+  mode?: 'default' | 'galgame' | 'svg_animation';
 }
 
 export interface Message {
