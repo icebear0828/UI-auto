@@ -10,7 +10,7 @@ export default defineConfig({
     reporter: 'html',
 
     use: {
-        baseURL: 'http://localhost:3000',
+        baseURL: 'http://localhost:12345',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
         actionTimeout: 15_000,
@@ -29,7 +29,7 @@ export default defineConfig({
 
     webServer: {
         command: 'pnpm dev',
-        url: 'http://localhost:3000',
+        url: 'http://localhost:12345',
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,
     },

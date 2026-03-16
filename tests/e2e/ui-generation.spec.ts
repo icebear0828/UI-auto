@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { submitPrompt, waitForUIGeneration } from './fixtures/test-utils';
 
-test.describe('UI Generation', () => {
+test.describe('UI Generation @api', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
     });

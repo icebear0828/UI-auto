@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { submitPrompt, waitForUIGeneration } from './fixtures/test-utils';
 
-test.describe('Tool Calls', () => {
+test.describe('Tool Calls @api', () => {
     // Tool calls require 2 Gemini round-trips + external API calls
     test.describe.configure({ timeout: 120_000 });
 

@@ -7,7 +7,7 @@ import {
     verifyNoHorizontalScroll
 } from './fixtures/test-utils';
 
-test.describe('Responsive Design', () => {
+test.describe('Responsive Design @api', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
     });

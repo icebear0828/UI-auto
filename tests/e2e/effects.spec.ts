@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { submitPrompt, waitForUIGeneration } from './fixtures/test-utils';
 
-test.describe('Trigger Effects', () => {
+test.describe('Trigger Effects @api', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
     });
