@@ -57,7 +57,7 @@ const CharacterSprite: React.FC<{ char: VNCharacter }> = ({ char }) => {
 
   return (
     <motion.div
-      className="absolute bottom-0 w-[500px] h-[800px] md:w-[600px] md:h-[900px] pointer-events-none origin-bottom"
+      className="absolute bottom-0 w-[45%] h-[85%] pointer-events-none origin-bottom"
       style={getPositionStyle(char.position)}
       initial={{ opacity: 0, y: 50, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: char.position === 'CLOSE_UP' ? 1.4 : 1, ...getAnimation(char.animation?.type) }}

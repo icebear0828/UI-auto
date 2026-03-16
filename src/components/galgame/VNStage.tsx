@@ -37,19 +37,26 @@ export const VNStage: React.FC<VNStageProps> = ({
   // 1. Safe Image Resolution
   useEffect(() => {
     // Defensive: Check if background object is valid before processing
-    if (!background || !background.source || !background.value) return;
+    if (!background || !background.value) return;
 
     let active = true;
-    
+
     const fetchImage = async () => {
         try {
             const url = await resolveImage(background);
             if (active && isMounted.current) setBgSrc(url);
         } catch (e) {
             console.error("Failed to load background", e);
+            // Fallback: construct Pollinations URL directly from value
+            if (active && isMounted.current && background.value) {
+                const fallback = background.value.startsWith('http')
+                    ? background.value
+                    : `https://image.pollinations.ai/prompt/${encodeURIComponent(background.value)}?nologo=true`;
+                setBgSrc(fallback);
+            }
         }
     };
-    
+
     fetchImage();
     return () => { active = false; };
   }, [background?.source, background?.value, background?.style]);
@@ -70,9 +77,9 @@ export const VNStage: React.FC<VNStageProps> = ({
   
   // 3. Loading/Skeleton State
   // If we don't have a valid background definition yet, show a loader
-  if (!background || !background.source) {
+  if (!background || (!background.source && !background.value)) {
       return (
-        <div className="w-full h-[600px] bg-zinc-950 flex items-center justify-center border border-white/10 rounded-2xl">
+        <div className="w-full h-full min-h-[500px] bg-zinc-950 flex items-center justify-center border border-white/10 rounded-2xl">
             <div className="flex flex-col items-center gap-2 opacity-50">
                 <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
                 <span className="text-xs font-mono text-indigo-400">INITIALIZING_ENGINE...</span>
@@ -83,7 +90,7 @@ export const VNStage: React.FC<VNStageProps> = ({
   
   return (
     <div 
-        className="relative w-full h-[600px] md:h-[800px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl bg-black select-none cursor-pointer group"
+        className="relative w-full h-full min-h-[500px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl bg-black select-none cursor-pointer group"
         onClick={handleStageClick}
     >
       {/* Layer 0: Background */}
@@ -106,12 +113,12 @@ export const VNStage: React.FC<VNStageProps> = ({
         />
       )}
 
-      {/* Loading Indicator for Generation */}
-      {background.source === 'GENERATED' && !bgSrc && (
+      {/* Loading Indicator while background resolves */}
+      {!bgSrc && (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
               <div className="flex flex-col items-center gap-4">
                  <div className="w-16 h-16 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-                 <span className="text-cyan-400 font-mono text-xs tracking-widest animate-pulse">NEURAL_RENDERING...</span>
+                 <span className="text-cyan-400 font-mono text-xs tracking-widest animate-pulse">LOADING_SCENE...</span>
               </div>
           </div>
       )}
