@@ -7,6 +7,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, RotateCw, Shield } from 'lucide-react';
 import DynamicRenderer from '@/components/DynamicRenderer';
+import { StreamingProvider } from '@/components/ui/renderUtils';
 import { UINode, UserContext, UIAction } from '@/types';
 
 interface DeviceWrapperProps {
@@ -112,7 +113,9 @@ export const DeviceWrapper: React.FC<DeviceWrapperProps> = ({
                         : 'h-[calc(100%-44px)]'
                     }
         `}>
-                    <DynamicRenderer node={node} onAction={onAction} onError={onError} path="root" />
+                    <StreamingProvider value={isStreaming}>
+                        <DynamicRenderer node={node} onAction={onAction} onError={onError} path="root" />
+                    </StreamingProvider>
                 </div>
 
                 {/* Loading Indicator */}

@@ -2,6 +2,47 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Mandatory Workflow (每次改动必须按此顺序执行，不可跳步)
+
+### Step 1: 写测试（BEFORE 写任何产品代码）
+
+触发条件：新增模块、新增 schema、新增组件、修改接口
+- [ ] 创建/更新 test 文件，定义预期行为
+- [ ] 如涉及 Zod schema：加 `zodToJsonSchema` 兼容性测试，断言输出不含 `prefixItems`、`allOf`
+- [ ] 运行测试确认 **红灯**（测试存在且失败，证明测试有效）
+
+### Step 2: 写实现
+
+- [ ] 写产品代码使测试通过
+- [ ] `pnpm exec tsc --noEmit` 通过
+- [ ] `pnpm test` 全绿
+
+### Step 3: E2E 浏览器验证（BEFORE 向用户报告完成）
+
+触发条件：改动涉及 AI 调用 / 流式生成 / Schema / Provider / 配置
+- [ ] `pnpm dev` 启动 dev server
+- [ ] 在浏览器中实际提交 prompt
+- [ ] 确认渲染正确、无 console 报错
+- [ ] **仅 tsc + unit test 通过不算完成，必须走到这一步**
+
+### Step 4: 向用户交付
+
+只有 Step 1-3 全部完成后才能告诉用户"完成了"。
+
+---
+
+### Schema 硬约束
+
+- Zod schema 通过 `zodToJsonSchema` 转成 JSON Schema 用于 OpenAI 兼容 API 的 `response_format`
+- **禁止** `z.tuple`、`z.intersection`、带 runtime 副作用的 `z.transform`
+- 坐标/点 用 `z.object({ x: z.number(), y: z.number() })` 而非 `z.tuple`
+
+### Code Quality 硬约束
+
+- TypeScript 禁止 `any`（含 `as any`、`: any`、`<any>`）
+- 删除/重命名 symbol 后，grep `src/` + `tests/` 确认零残留
+- 不加未要求的 docstring、注释、类型标注
+
 ## Project Overview
 
 GenUI Architect is an AI-powered UI generator that uses Google Gemini to dynamically create React UI components from natural language prompts. It renders a JSON-based UINode tree with streaming generation, self-healing error recovery, an edit/refine mode, and a visual novel (galgame) mode.
@@ -10,7 +51,7 @@ GenUI Architect is an AI-powered UI generator that uses Google Gemini to dynamic
 
 ```bash
 pnpm install                  # Install dependencies
-pnpm dev                      # Dev server at http://localhost:3000
+pnpm dev                      # Dev server at http://localhost:12345
 pnpm build                    # Production build to dist/
 pnpm exec tsc --noEmit        # Type check (CI runs this)
 
@@ -23,9 +64,13 @@ pnpm test:coverage            # With v8 coverage
 pnpm exec vitest run tests/schemas.test.ts
 
 # E2E tests (playwright, chromium)
-pnpm test:e2e                 # Headless
+pnpm test:e2e                 # Headless (all tests)
 pnpm test:e2e:ui              # Interactive UI
 pnpm test:e2e:debug           # Debug mode
+
+# E2E by category (@api tag splits API-dependent vs pure UI tests)
+pnpm exec playwright test --grep-invert @api   # UI-only (no API key needed)
+pnpm exec playwright test --grep @api          # API-dependent (needs GEMINI_API_KEY)
 ```
 
 ## Environment Setup
@@ -149,13 +194,16 @@ Registry-based pattern. Each tool module self-registers via `registerTool()`:
 
 - **Unit tests**: `tests/*.test.ts` (services), `tests/components/*.test.tsx`, `tests/hooks/*.test.ts`
 - **E2E tests**: `tests/e2e/*.spec.ts` with shared fixtures in `tests/e2e/fixtures/`
+  - API-dependent tests use `@api` tag in `test.describe` name (ui-generation, tool-calls, effects, responsive, history)
+  - Pure UI tests have no tag (workspace, settings) — run without API key
+  - All interactive elements use `data-testid` attributes for stable selectors
 - **Setup**: `tests/setup.ts` mocks matchMedia, ResizeObserver, IntersectionObserver, Audio API, crypto
 - Vitest config explicitly excludes `tests/e2e/`; Playwright runs only from `tests/e2e/`
 - Tests use `@/` alias to import from `src/`
 
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`) runs three jobs: `test` (type check + unit tests + build), `lint` (type check), `e2e` (playwright with chromium). Uses pnpm 9, Node 20.
+GitHub Actions (`.github/workflows/ci.yml`) runs four jobs: `test` (type check + unit tests + build), `lint` (type check), `e2e-ui` (pure UI playwright tests, no API key), `e2e` (API-dependent playwright tests). Uses pnpm 9, Node 20.
 
 ## Maintenance Skills (Quick Reference)
 

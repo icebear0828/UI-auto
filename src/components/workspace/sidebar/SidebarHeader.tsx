@@ -27,7 +27,7 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-            <button onClick={() => { onSettingsClick(); onPlaySound('CLICK'); }} className="p-2 text-slate-400 hover:text-white transition-colors hover:bg-white/10 rounded-lg group relative">
+            <button onClick={() => { onSettingsClick(); onPlaySound('CLICK'); }} className="p-2 text-slate-400 hover:text-white transition-colors hover:bg-white/10 rounded-lg group relative" data-testid="settings-button">
                 <Settings className="w-4 h-4" />
                 <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-indigo-500 scale-0 group-hover:scale-100 transition-transform" />
             </button>

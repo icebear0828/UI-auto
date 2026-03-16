@@ -1,6 +1,10 @@
 
-import React, { Suspense } from 'react';
+import React, { Suspense, createContext, useContext } from 'react';
 import { UINode, UIAction } from '@/types';
+
+const StreamingContext = createContext(false);
+export const StreamingProvider = StreamingContext.Provider;
+export const useIsStreaming = () => useContext(StreamingContext);
 
 // BREAKING CIRCULAR DEPENDENCY:
 // DynamicRenderer imports Registry -> Registry imports Container -> Container imports renderUtils -> renderUtils imports DynamicRenderer
@@ -25,12 +29,12 @@ export const RenderChildren = ({ children, onAction, parentPath }: { children: U
         // For strict editing, we might need to preserve original indices, but filtering is safer for display.
         const childPath = parentPath ? `${parentPath}.children.${i}` : undefined;
         return (
-          <DynamicRenderer 
-            key={i} 
-            index={i} 
-            node={child} 
-            onAction={onAction} 
-            path={childPath} 
+          <DynamicRenderer
+            key={i}
+            index={i}
+            node={child}
+            onAction={onAction}
+            path={childPath}
           />
         );
       })}

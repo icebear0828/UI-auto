@@ -16,6 +16,7 @@ export const SidebarTabBar: React.FC<SidebarTabBarProps> = ({
         <button
             onClick={() => { setSidebarTab('chat'); onPlaySound('HOVER'); }}
             className={`pb-2 text-xs font-bold uppercase tracking-wider transition-colors relative ${sidebarTab === 'chat' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+            data-testid="tab-generator"
         >
             <div className="flex items-center gap-2">
                 <MessageSquare className="w-3.5 h-3.5" />
@@ -27,6 +28,7 @@ export const SidebarTabBar: React.FC<SidebarTabBarProps> = ({
         <button
             onClick={() => { setSidebarTab('layers'); onPlaySound('HOVER'); }}
             className={`pb-2 text-xs font-bold uppercase tracking-wider transition-colors relative ${sidebarTab === 'layers' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+            data-testid="tab-structure"
         >
             <div className="flex items-center gap-2">
                 <Layers className="w-3.5 h-3.5" />
