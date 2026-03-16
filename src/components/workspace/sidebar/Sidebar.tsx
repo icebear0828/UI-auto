@@ -36,6 +36,8 @@ interface SidebarProps {
     onPlaySound: (sound: string) => void;
     showToast: (options: any) => void;
     messagesEndRef: React.RefObject<HTMLDivElement>;
+    canCancel: boolean;
+    onCancel: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = (props) => {
@@ -43,7 +45,8 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
         showSidebar, sidebarTab, setSidebarTab, messages, activeNode,
         input, setInput, loading, isGenerating, editMode, setEditMode,
         selectedPath, setSelectedPath, context, setContext, metrics,
-        onSubmit, onSettingsClick, onPlaySound, showToast, messagesEndRef
+        onSubmit, onSettingsClick, onPlaySound, showToast, messagesEndRef,
+        canCancel, onCancel
     } = props;
 
     const breadcrumbs = selectedPath
@@ -52,14 +55,14 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
     const selectedName = breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1] : 'Component';
 
     return (
-        <div className={`${showSidebar ? 'w-[420px] border-r' : 'w-0'} flex flex-col border-white/10 bg-black/60 backdrop-blur-2xl transition-all duration-500 ease-[0.23,1,0.32,1] relative z-20 overflow-hidden shadow-2xl`}>
+        <div className={`${showSidebar ? 'w-[420px] border-r' : 'w-0'} flex flex-col border-white/10 bg-black/60 backdrop-blur-2xl transition-all duration-500 ease-[0.23,1,0.32,1] relative z-20 overflow-hidden shadow-2xl`} data-testid="sidebar">
             <div className="flex-1 flex flex-col min-h-0 w-[420px]">
                 <SidebarHeader isGenerating={isGenerating} onSettingsClick={onSettingsClick} onPlaySound={onPlaySound} />
                 <SidebarTabBar sidebarTab={sidebarTab} setSidebarTab={setSidebarTab} onPlaySound={onPlaySound} />
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar relative">
                     {sidebarTab === 'chat' && (
-                        <ChatMessages messages={messages} setInput={setInput} messagesEndRef={messagesEndRef} />
+                        <ChatMessages messages={messages} setInput={setInput} messagesEndRef={messagesEndRef} loading={loading} />
                     )}
                     {sidebarTab === 'layers' && (
                         <LayersPanel activeNode={activeNode} />
@@ -72,6 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                         input={input} setInput={setInput} loading={loading} isGenerating={isGenerating}
                         editMode={editMode} selectedPath={selectedPath} selectedName={selectedName}
                         context={context} onSubmit={onSubmit} onPlaySound={onPlaySound}
+                        canCancel={canCancel} onCancel={onCancel}
                     />
                     <ModeToggle
                         editMode={editMode} setEditMode={setEditMode} context={context}

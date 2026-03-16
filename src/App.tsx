@@ -35,13 +35,20 @@ const App = () => {
 
 const Workspace = () => {
   const { state, actions, refs, history } = useGenUI();
-  const { context, input, loading, streamingNode, messages, metrics, editMode, selectedPath, config, modalNode } = state;
+  const { context, input, loading, streamingNode, messages, metrics, editMode, selectedPath, config, modalNode, canCancel } = state;
   const { setTheme, isGenerating, setIsGenerating } = useTheme();
 
   const [showSettings, setShowSettings] = useState(false);
   const [showCode, setShowCode] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [sidebarTab, setSidebarTab] = useState<'chat' | 'layers'>('chat');
+
+  // Auto-hide sidebar in immersive modes during generation
+  useEffect(() => {
+    if ((context.mode === 'galgame' || context.mode === 'svg_animation') && loading) {
+      setShowSidebar(false);
+    }
+  }, [context.mode, loading]);
 
   // Audio Engine
   const { play } = useSound(config.soundEnabled);
@@ -120,6 +127,8 @@ const Workspace = () => {
             onPlaySound={play}
             showToast={showToast}
             messagesEndRef={refs.messagesEndRef}
+            canCancel={canCancel}
+            onCancel={actions.cancelGeneration}
           />
 
           {/* --- CENTER CANVAS --- */}
@@ -129,6 +138,7 @@ const Workspace = () => {
             <button
               onClick={() => setShowSidebar(!showSidebar)}
               className={`absolute left-5 top-5 z-40 p-2.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl text-slate-400 hover:text-white transition-all hover:bg-white/10 shadow-xl ${!showSidebar ? 'translate-x-0' : '-translate-x-full opacity-0 pointer-events-none'}`}
+              data-testid="sidebar-toggle"
             >
               <PanelLeft className="w-5 h-5" />
             </button>
@@ -148,18 +158,35 @@ const Workspace = () => {
             />
 
             {/* Canvas Area */}
-            <div className="flex-1 overflow-hidden relative flex items-center justify-center" data-streaming={loading ? 'true' : 'false'}>
+            <div className="flex-1 overflow-hidden relative flex items-center justify-center" data-streaming={loading ? 'true' : 'false'} data-testid="canvas">
+              {/* Streaming progress bar */}
+              <div
+                className={`absolute top-0 left-0 right-0 h-0.5 z-30 overflow-hidden transition-opacity duration-300 ${loading ? 'opacity-100' : 'opacity-0'}`}
+                data-testid="progress-bar"
+              >
+                <div className="h-full w-1/3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full animate-[shimmer_1.5s_ease-in-out_infinite]"
+                  style={{ animation: 'shimmer 1.5s ease-in-out infinite' }}
+                />
+                <style>{`@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(400%); } }`}</style>
+              </div>
+
               <div className="relative z-10 w-full h-full overflow-y-auto custom-scrollbar flex items-start justify-center pt-12 pb-32">
                 {activeNode ? (
                   <DeviceWrapper
                     context={context}
                     node={activeNode}
-                    onAction={(a: any) => { actions.handleAction(a); play('CLICK'); }}
+                    onAction={(a: unknown) => { actions.handleAction(a); play('CLICK'); }}
                     onError={actions.fixNode}
                     isStreaming={loading}
                     editMode={editMode}
                     history={history}
                   />
+                ) : loading ? (
+                  <div className="flex flex-col items-center justify-center mt-32 w-full max-w-md space-y-4 animate-in fade-in duration-500" data-testid="skeleton-screen">
+                    <div className="w-3/4 h-8 bg-white/5 rounded-lg animate-pulse" />
+                    <div className="w-full h-32 bg-white/5 rounded-lg animate-pulse" />
+                    <div className="w-1/2 h-10 bg-white/5 rounded-lg animate-pulse" />
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-zinc-500 mt-32 animate-in fade-in zoom-in-95 duration-700">
                     <div className="w-32 h-32 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center mb-8 shadow-2xl rotate-3 ring-1 ring-white/5 relative group backdrop-blur-md">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUp, Command, Wand2 } from 'lucide-react';
+import { ArrowUp, Square, Command, Wand2 } from 'lucide-react';
 import { UserContext } from '@/types';
 
 interface PromptInputProps {
@@ -13,6 +13,8 @@ interface PromptInputProps {
     context: UserContext;
     onSubmit: (e: React.FormEvent) => void;
     onPlaySound: (sound: string) => void;
+    canCancel?: boolean;
+    onCancel?: () => void;
 }
 
 export const PromptInput: React.FC<PromptInputProps> = ({
@@ -25,7 +27,9 @@ export const PromptInput: React.FC<PromptInputProps> = ({
     selectedName,
     context,
     onSubmit,
-    onPlaySound
+    onPlaySound,
+    canCancel,
+    onCancel
 }) => (
     <form onSubmit={onSubmit} className="relative group">
         <div className={`absolute -inset-0.5 bg-gradient-to-r ${editMode ? 'from-indigo-600 via-purple-600 to-pink-600' : 'from-indigo-500/50 via-purple-500/50 to-pink-500/50'} rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-md`} />
@@ -41,20 +45,33 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                 type="text"
                 value={input}
                 onChange={(e) => { setInput(e.target.value); onPlaySound('TYPE'); }}
-                placeholder={editMode && selectedPath ? `Refine this ${selectedName}...` : context.mode === 'galgame' ? "Set the scene or dialogue..." : "Describe your UI..."}
+                placeholder={editMode && selectedPath ? `Refine this ${selectedName}...` : context.mode === 'galgame' ? "Set the scene or dialogue..." : context.mode === 'svg_animation' ? "Describe a tutorial or scene..." : "Describe your UI..."}
                 className="w-full bg-transparent text-sm text-slate-100 placeholder-slate-500 py-4 px-3 focus:outline-none font-medium"
+                data-testid="prompt-input"
                 disabled={loading || isGenerating}
             />
-            <button
-                type="submit"
-                disabled={!input.trim() || loading || isGenerating}
-                className={`mr-2 p-2 rounded-lg transition-all duration-300 ${input.trim()
-                        ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 translate-x-0 opacity-100'
-                        : 'bg-white/5 text-zinc-600 translate-x-2 opacity-50'
-                    }`}
-            >
-                <ArrowUp className="w-4 h-4" />
-            </button>
+            {canCancel ? (
+                <button
+                    type="button"
+                    onClick={onCancel}
+                    data-testid="prompt-cancel"
+                    className="mr-2 p-2 rounded-lg transition-all duration-300 bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-500/20"
+                >
+                    <Square className="w-4 h-4" />
+                </button>
+            ) : (
+                <button
+                    type="submit"
+                    disabled={!input.trim() || loading || isGenerating}
+                    data-testid="prompt-submit"
+                    className={`mr-2 p-2 rounded-lg transition-all duration-300 ${input.trim()
+                            ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 translate-x-0 opacity-100'
+                            : 'bg-white/5 text-zinc-600 translate-x-2 opacity-50'
+                        }`}
+                >
+                    <ArrowUp className="w-4 h-4" />
+                </button>
+            )}
         </div>
     </form>
 );

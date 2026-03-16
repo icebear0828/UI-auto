@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Gamepad2, Layout, PenTool } from 'lucide-react';
+import { Activity, Gamepad2, Layout, PenTool, Shapes } from 'lucide-react';
 import { UserContext } from '@/types';
 
 interface ModeToggleProps {
@@ -45,9 +45,31 @@ export const ModeToggle: React.FC<ModeToggleProps> = ({
                         ? 'bg-pink-600/90 text-white border-pink-500 shadow-[0_0_20px_rgba(236,72,153,0.4)]'
                         : 'bg-white/5 border-white/10 text-slate-500 hover:text-slate-300 hover:bg-white/10'
                     }`}
+                data-testid="mode-toggle-vn"
             >
                 <Gamepad2 className="w-3 h-3" />
-                {context.mode === 'galgame' ? 'VN Mode' : 'UI Mode'}
+                {context.mode === 'galgame' ? 'VN' : 'VN'}
+            </button>
+
+            <button
+                onClick={() => {
+                    const newMode = context.mode === 'svg_animation' ? 'default' : 'svg_animation';
+                    setContext(p => ({ ...p, mode: newMode }));
+                    onPlaySound('ACTIVATE');
+                    if (newMode === 'svg_animation') {
+                        showToast({ type: 'SUCCESS', title: 'SVG Engine', description: 'SVG Animation Mode Activated' });
+                    } else {
+                        showToast({ type: 'INFO', title: 'Standard UI', description: 'Returned to Architect Mode' });
+                    }
+                }}
+                className={`text-[10px] flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 font-bold tracking-wider uppercase backdrop-blur-md ${context.mode === 'svg_animation'
+                        ? 'bg-cyan-600/90 text-white border-cyan-500 shadow-[0_0_20px_rgba(34,211,238,0.4)]'
+                        : 'bg-white/5 border-white/10 text-slate-500 hover:text-slate-300 hover:bg-white/10'
+                    }`}
+                data-testid="mode-toggle-svg"
+            >
+                <Shapes className="w-3 h-3" />
+                SVG
             </button>
 
             <button
@@ -56,6 +78,7 @@ export const ModeToggle: React.FC<ModeToggleProps> = ({
                         ? 'bg-indigo-600/90 text-white border-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.4)]'
                         : 'bg-white/5 border-white/10 text-slate-500 hover:text-slate-300 hover:bg-white/10'
                     }`}
+                data-testid="mode-toggle-edit"
             >
                 {editMode ? <PenTool className="w-3 h-3" /> : <Layout className="w-3 h-3" />}
                 {editMode ? 'Design' : 'View'}

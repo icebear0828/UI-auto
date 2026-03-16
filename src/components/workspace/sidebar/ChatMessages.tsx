@@ -6,12 +6,14 @@ interface ChatMessagesProps {
     messages: Message[];
     setInput: (value: string) => void;
     messagesEndRef: React.RefObject<HTMLDivElement>;
+    loading?: boolean;
 }
 
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
     messages,
     setInput,
-    messagesEndRef
+    messagesEndRef,
+    loading
 }) => (
     <div className="p-5 space-y-8 min-h-full flex flex-col">
         {messages && messages.length === 0 && (
@@ -52,6 +54,16 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
                 )}
             </div>
         ))}
+        {loading && (
+            <div className="flex flex-col gap-2 items-start animate-in slide-in-from-bottom-2 duration-500 fade-in" data-testid="thinking-indicator">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Architect</span>
+                <div className="px-5 py-4 rounded-2xl rounded-tl-sm bg-black/40 border border-white/10 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce [animation-delay:0ms]" />
+                    <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce [animation-delay:150ms]" />
+                    <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce [animation-delay:300ms]" />
+                </div>
+            </div>
+        )}
         <div ref={messagesEndRef} className="h-4" />
     </div>
 );

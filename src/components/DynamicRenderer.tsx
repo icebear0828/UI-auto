@@ -9,6 +9,7 @@ import { useEditor } from './EditorContext';
 import { AlertCircle, RefreshCw, Edit3, MousePointer2, GitCommit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AnimationConfig } from './ui/animations';
+import { useIsStreaming } from './ui/renderUtils';
 
 
 interface RendererProps {
@@ -75,7 +76,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
  */
 const DynamicRenderer: React.FC<RendererProps> = ({ node, onAction, index = 0, path = 'root', onError }) => {
   const { isEditing, selectedPath, hoveredPath, onSelect, onHover } = useEditor();
+  const isStreaming = useIsStreaming();
   const elementRef = useRef<HTMLDivElement>(null);
+  const lastValidNodeRef = useRef<Record<string, unknown> | null>(null);
 
   // 1. Validation Layer
   if (!node || typeof node !== 'object') return null;
@@ -87,13 +90,16 @@ const DynamicRenderer: React.FC<RendererProps> = ({ node, onAction, index = 0, p
 
   const { success, data: validNode, error } = cachedValidateNode(node);
 
-  if (!success || !validNode) {
-    if (Object.keys(node).length > 0) {
-      telemetry.logEvent('render_validation', 'HALLUCINATION', {
-        nodeKeys: Object.keys(node),
-        raw: JSON.stringify(node).substring(0, 50) + '...'
-      });
+  // Cache last valid node for streaming stability
+  if (success && validNode) {
+    lastValidNodeRef.current = validNode;
+  }
 
+  // Use cached valid node during streaming to prevent flicker
+  const effectiveNode = (success && validNode) ? validNode : (isStreaming ? lastValidNodeRef.current : null);
+
+  if (!effectiveNode) {
+    if (!isStreaming && Object.keys(node).length > 0) {
       const errString = error
         ? (typeof error === 'string' ? error : JSON.stringify(error.format(), null, 2))
         : "Unknown Validation Error";
@@ -117,8 +123,10 @@ const DynamicRenderer: React.FC<RendererProps> = ({ node, onAction, index = 0, p
     return null;
   }
 
+  const validNode_ = effectiveNode;
+
   // 2. Identify Component Type
-  const nodeKeys = Object.keys(validNode);
+  const nodeKeys = Object.keys(validNode_);
   const componentType = nodeKeys.find(key => ComponentRegistry[key]);
 
   // 3. Fallback
@@ -143,7 +151,7 @@ const DynamicRenderer: React.FC<RendererProps> = ({ node, onAction, index = 0, p
 
   // 4. Resolve Component & Props
   const Component = ComponentRegistry[componentType];
-  const props = validNode[componentType] || {};
+  const props = validNode_[componentType] || {};
 
   // Extract Animation Prop from schema (added to all visual components)
   const { children, animation, ...restProps } = props;
