@@ -14,13 +14,14 @@ export type TableProps = z.infer<typeof TablePropsSchema>;
 
 // 11. Chart
 export const ChartDataPointSchema = z.object({
-  name: z.string(),
-  value: z.number(),
+  name: z.string().optional(),
 }).passthrough();
 export const ChartPropsSchema = z.object({
   title: z.string().optional(),
   type: z.string().optional(),
   color: z.string().optional(),
+  colors: z.array(z.string()).optional(),
+  series: z.array(z.string()).optional(),
   data: z.array(ChartDataPointSchema).optional().default([]),
   animation: AnimationSchema.optional(),
 }).passthrough();

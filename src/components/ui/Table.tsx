@@ -1,17 +1,64 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import DynamicRenderer from '@/components/DynamicRenderer';
 import { useTheme } from '@/components/ThemeContext';
-import { Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ChevronsUpDown } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ChevronsUpDown, Download, CheckSquare, Square } from 'lucide-react';
 
 export const Table = ({ headers, rows, onAction, path }: any) => {
   const { theme } = useTheme();
-  
+
   // --- Local State for Interactive Features ---
   const [filterText, setFilterText] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: number, direction: 'asc' | 'desc' } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
   const rowsPerPage = 5;
+
+  // --- Row Selection ---
+  const toggleRow = useCallback((idx: number) => {
+    setSelectedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(idx)) next.delete(idx); else next.add(idx);
+      return next;
+    });
+  }, []);
+
+  const toggleAll = useCallback(() => {
+    if (!rows) return;
+    if (selectedRows.size === rows.length) {
+      setSelectedRows(new Set());
+    } else {
+      setSelectedRows(new Set(rows.map((_: unknown, i: number) => i)));
+    }
+  }, [rows, selectedRows.size]);
+
+  // --- CSV Export ---
+  const handleExportCsv = useCallback(() => {
+    if (!headers || !rows) return;
+    const extractText = (cell: unknown): string => {
+      if (typeof cell === 'string' || typeof cell === 'number') return String(cell);
+      if (cell && typeof cell === 'object') {
+        const obj = cell as Record<string, unknown>;
+        if (obj.text && typeof obj.text === 'object') return String((obj.text as Record<string, unknown>).content ?? '');
+        if (obj.badge && typeof obj.badge === 'object') return String((obj.badge as Record<string, unknown>).label ?? '');
+      }
+      return '';
+    };
+    const exportRows = selectedRows.size > 0
+      ? rows.filter((_: unknown, i: number) => selectedRows.has(i))
+      : rows;
+    const csv = [
+      headers.join(','),
+      ...exportRows.map((row: unknown[]) => row.map((cell: unknown) => `"${extractText(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'table-export.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [headers, rows, selectedRows]);
 
   // --- Filtering & Sorting Logic ---
   const processedRows = useMemo(() => {
@@ -80,8 +127,16 @@ export const Table = ({ headers, rows, onAction, path }: any) => {
               className={theme.table.searchInput}
            />
          </div>
-         <div className="text-xs text-slate-500 font-mono uppercase tracking-wide">
-            {processedRows.length} Items
+         <div className="flex items-center gap-3">
+            {selectedRows.size > 0 && (
+              <span className="text-xs text-indigo-400 font-mono">{selectedRows.size} selected</span>
+            )}
+            <button onClick={handleExportCsv} className="p-1 rounded text-zinc-600 hover:text-zinc-400 hover:bg-white/5 transition-colors" title={selectedRows.size > 0 ? `Export ${selectedRows.size} rows` : 'Export all'}>
+              <Download className="w-3.5 h-3.5" />
+            </button>
+            <span className="text-xs text-slate-500 font-mono uppercase tracking-wide">
+              {processedRows.length} Items
+            </span>
          </div>
       </div>
 
@@ -90,9 +145,14 @@ export const Table = ({ headers, rows, onAction, path }: any) => {
         <table className="w-full text-sm text-left">
           <thead className={theme.table.header}>
             <tr>
+              <th className="px-3 py-4 w-8">
+                <button onClick={toggleAll} className="text-zinc-600 hover:text-zinc-400 transition-colors">
+                  {rows && selectedRows.size === rows.length ? <CheckSquare className="w-4 h-4 text-indigo-400" /> : <Square className="w-4 h-4" />}
+                </button>
+              </th>
               {headers?.map((h: string, i: number) => (
-                <th 
-                  key={i} 
+                <th
+                  key={i}
                   className="px-6 py-4 font-semibold tracking-wider cursor-pointer hover:bg-white/5 transition-colors group select-none"
                   onClick={() => handleSort(i)}
                 >
@@ -118,7 +178,12 @@ export const Table = ({ headers, rows, onAction, path }: any) => {
                     const visualRowIndex = (currentPage - 1) * rowsPerPage + i;
                     
                     return (
-                        <tr key={i} className={theme.table.row}>
+                        <tr key={i} className={`${theme.table.row} ${selectedRows.has(visualRowIndex) ? 'bg-indigo-500/10' : ''}`}>
+                            <td className="px-3 py-3 w-8">
+                              <button onClick={() => toggleRow(visualRowIndex)} className="text-zinc-600 hover:text-zinc-400 transition-colors">
+                                {selectedRows.has(visualRowIndex) ? <CheckSquare className="w-4 h-4 text-indigo-400" /> : <Square className="w-4 h-4" />}
+                              </button>
+                            </td>
                             {row.map((cell: any, j: number) => {
                             const cellPath = path ? `${path}.rows.${visualRowIndex}.${j}` : undefined;
                             return (
@@ -136,7 +201,7 @@ export const Table = ({ headers, rows, onAction, path }: any) => {
                 })
             ) : (
                 <tr>
-                    <td colSpan={headers.length} className="px-6 py-12 text-center text-slate-500 italic">
+                    <td colSpan={(headers?.length ?? 0) + 1} className="px-6 py-12 text-center text-slate-500 italic">
                         No results found
                     </td>
                 </tr>

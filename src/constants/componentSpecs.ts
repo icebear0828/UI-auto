@@ -94,12 +94,21 @@ Each node MUST be an object with EXACTLY ONE key (the component name).
       - src: string (URL)
       - status: "ONLINE", "OFFLINE", "BUSY"
 
-11. "chart" (Recharts)
+11. "chart" (Recharts — 9 chart types, multi-series support)
     - Props:
       - title: string
-      - type: "BAR", "LINE", "AREA"
-      - color: string (Hex)
-      - data: Array<{ name: string, value: number }>
+      - type: "BAR" | "LINE" | "AREA" | "PIE" | "DONUT" | "SCATTER" | "RADAR" | "RADIAL" | "TREEMAP" | "COMPOSED"
+      - color: string (Hex, primary color)
+      - colors: string[] (palette for multi-series, e.g. ["#6366f1", "#f472b6", "#22d3ee"])
+      - series: string[] (data keys to plot, e.g. ["revenue", "cost"])
+      - data: Array<{ name: string, value?: number, [key: string]: number }> — use "value" for single-series, custom keys for multi-series
+    - Examples:
+      * Single series: { type: "BAR", data: [{ name: "Q1", value: 100 }, { name: "Q2", value: 200 }] }
+      * Multi-series: { type: "LINE", series: ["revenue", "cost"], data: [{ name: "Jan", revenue: 500, cost: 300 }] }
+      * Pie/Donut: { type: "PIE", data: [{ name: "Desktop", value: 60 }, { name: "Mobile", value: 40 }] }
+      * Scatter: { type: "SCATTER", data: [{ x: 10, y: 20 }, { x: 30, y: 40 }] }
+      * Radar: { type: "RADAR", series: ["teamA", "teamB"], data: [{ name: "Speed", teamA: 80, teamB: 65 }] }
+      * Composed (bar+line): { type: "COMPOSED", series: ["sales", "trend"], data: [...] }
 
 12. "accordion"
     - Props:
