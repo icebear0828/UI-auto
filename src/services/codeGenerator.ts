@@ -56,7 +56,13 @@ const generateJSX = (node: UINode, depth: number = 0): string => {
   const propLines = Object.entries(restProps).map(([k, v]) => {
     if (v === undefined || v === null) return "";
     if (v === true) return k; // Boolean shorthand
-    if (typeof v === "string") return `${k}="${v}"`;
+    if (typeof v === "string") {
+      // Use curly brace syntax for strings containing quotes or newlines
+      if ((v as string).includes('"') || (v as string).includes('\n') || (v as string).length > 100) {
+        return `${k}={${JSON.stringify(v)}}`;
+      }
+      return `${k}="${v}"`;
+    }
     return `${k}={${serializeProp(v, depth + 1)}}`;
   }).filter(Boolean);
 
