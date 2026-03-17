@@ -46,7 +46,7 @@ Each node MUST be an object with EXACTLY ONE key (the component name).
        * "NAVIGATE": { "url": string, "target": "_blank" | "_self" }
        * "OPEN_MODAL": { "title": string, "content": UINode }
        * "CLOSE_MODAL": {}
-       * "TRIGGER_EFFECT": { "effect": "CONFETTI" | "SNOW" | "FIREWORKS" | "HEARTS" | "SPARKLE" }
+       * "TRIGGER_EFFECT": { "effect": "CONFETTI" | "SNOW" | "FIREWORKS" | "HEARTS" | "SPARKLE" | "RAIN" | "PETALS" | "STARS" | "MONEY" | "BUBBLES" | "THUNDER" | "CELEBRATE" | "CUSTOM", "config"?: { particleCount, spread, colors, shapes, gravity, decay, drift, startVelocity, ticks, scalar, origin: {x,y}, angle, duration?, interval? } }
        * "SHOW_TOAST": { "message": string, "type": "SUCCESS" | "ERROR" | "INFO" }
        * "COPY_TO_CLIPBOARD": { "text": string }
        * "DOWNLOAD": { "filename": string, "content": string }

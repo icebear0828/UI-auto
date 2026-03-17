@@ -147,6 +147,170 @@ const handleTriggerEffect: ActionHandler = (action, ctx) => {
             });
             break;
 
+        case 'RAIN': {
+            const rainEnd = Date.now() + 3000;
+            const rainInterval = setInterval(() => {
+                if (Date.now() > rainEnd) return clearInterval(rainInterval);
+                confetti({
+                    particleCount: 30,
+                    spread: 180,
+                    startVelocity: 45,
+                    ticks: 300,
+                    gravity: 1.2,
+                    decay: 0.97,
+                    shapes: ['square'],
+                    colors: ['#60a5fa', '#93c5fd', '#bfdbfe'],
+                    scalar: 0.4,
+                    origin: { x: Math.random(), y: 0 }
+                });
+            }, 150);
+            break;
+        }
+
+        case 'PETALS': {
+            const petalEnd = Date.now() + 3000;
+            const petalInterval = setInterval(() => {
+                if (Date.now() > petalEnd) return clearInterval(petalInterval);
+                confetti({
+                    particleCount: 8,
+                    spread: 120,
+                    startVelocity: 15,
+                    ticks: 300,
+                    gravity: 0.3,
+                    decay: 0.96,
+                    drift: 1.5,
+                    shapes: ['circle'],
+                    colors: ['#fda4af', '#fb7185', '#fecdd3', '#ffe4e6'],
+                    scalar: 1.2,
+                    origin: { x: Math.random(), y: 0 }
+                });
+            }, 200);
+            break;
+        }
+
+        case 'STARS': {
+            const starEnd = Date.now() + 2000;
+            const starInterval = setInterval(() => {
+                if (Date.now() > starEnd) return clearInterval(starInterval);
+                confetti({
+                    particleCount: 3,
+                    spread: 30,
+                    startVelocity: 60,
+                    ticks: 100,
+                    gravity: 0.8,
+                    shapes: ['star'],
+                    colors: ['#fcd34d', '#fbbf24', '#f59e0b'],
+                    scalar: 1.5,
+                    angle: 200 + Math.random() * 140,
+                    origin: { x: Math.random(), y: 0 }
+                });
+            }, 150);
+            break;
+        }
+
+        case 'MONEY':
+            confetti({
+                particleCount: 60,
+                spread: 90,
+                ticks: 200,
+                gravity: 0.6,
+                decay: 0.95,
+                shapes: ['circle'],
+                colors: ['#fbbf24', '#f59e0b', '#d97706', '#22c55e', '#16a34a'],
+                scalar: 1.3,
+                origin: { y: 0.3 }
+            });
+            break;
+
+        case 'BUBBLES': {
+            const bubbleEnd = Date.now() + 3000;
+            const bubbleInterval = setInterval(() => {
+                if (Date.now() > bubbleEnd) return clearInterval(bubbleInterval);
+                confetti({
+                    particleCount: 5,
+                    spread: 60,
+                    startVelocity: 25,
+                    ticks: 250,
+                    gravity: -0.3,
+                    decay: 0.96,
+                    shapes: ['circle'],
+                    colors: ['#67e8f9', '#a5f3fc', '#cffafe', '#e0f2fe'],
+                    scalar: 1.8,
+                    origin: { x: 0.3 + Math.random() * 0.4, y: 1 }
+                });
+            }, 200);
+            break;
+        }
+
+        case 'THUNDER': {
+            // Flash + shake
+            const canvas = document.querySelector('[data-testid="canvas"]') as HTMLElement;
+            if (canvas) {
+                canvas.style.transition = 'none';
+                canvas.style.filter = 'brightness(3)';
+                setTimeout(() => { canvas.style.transition = 'filter 0.3s'; canvas.style.filter = ''; }, 100);
+                canvas.style.animation = 'shake 0.3s ease-in-out';
+                setTimeout(() => { canvas.style.animation = ''; }, 300);
+            }
+            confetti({
+                particleCount: 20,
+                spread: 360,
+                startVelocity: 50,
+                ticks: 60,
+                shapes: ['square'],
+                colors: ['#fef08a', '#fde047', '#ffffff'],
+                scalar: 0.6,
+                gravity: 1.5,
+                origin: { y: 0.3 }
+            });
+            break;
+        }
+
+        case 'CELEBRATE': {
+            // Multi-wave from both sides
+            const celEnd = Date.now() + 3000;
+            const celInterval = setInterval(() => {
+                if (Date.now() > celEnd) return clearInterval(celInterval);
+                confetti({
+                    particleCount: 30,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0, y: 0.65 },
+                    colors: ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd']
+                });
+                confetti({
+                    particleCount: 30,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1, y: 0.65 },
+                    colors: ['#f472b6', '#ec4899', '#db2777', '#be185d']
+                });
+            }, 300);
+            break;
+        }
+
+        case 'CUSTOM': {
+            // AI passes raw confetti config
+            const config = action.payload?.config;
+            if (config && typeof config === 'object') {
+                const duration = config.duration as number | undefined;
+                const interval = config.interval as number | undefined;
+                // Strip non-confetti keys
+                const { duration: _d, interval: _i, ...confettiConfig } = config as Record<string, unknown>;
+                if (duration && interval) {
+                    // Repeated bursts
+                    const customEnd = Date.now() + duration;
+                    const customInterval = setInterval(() => {
+                        if (Date.now() > customEnd) return clearInterval(customInterval);
+                        confetti(confettiConfig);
+                    }, interval);
+                } else {
+                    confetti(confettiConfig);
+                }
+            }
+            break;
+        }
+
         default:
             actionLogger.warn('TRIGGER_EFFECT', `Unknown effect: ${effect}`);
             ctx.showToast({

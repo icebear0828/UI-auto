@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px) translateY(2px); }
+  50% { transform: translateX(4px) translateY(-2px); }
+  75% { transform: translateX(-3px) translateY(1px); }
+}
+
 /* Custom base styles */
 @layer base {
   body {
