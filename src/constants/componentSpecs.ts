@@ -234,4 +234,14 @@ Each node MUST be an object with EXACTLY ONE key (the component name).
       - svg_code: string (complete SVG markup, sanitized before rendering)
     - The AI outputs raw SVG with: radial gradients, glow filters, SMIL animations, stick figures, flow arrows, data particles
     - Use for: tutorials, diagrams, comparisons, visual storytelling, flowcharts, timelines
+
+32. "presentation" (Slide Deck — multiple SVG slides with navigation)
+    - AI generates multiple slides in one response, each with its own SVG
+    - Props:
+      - title: string (deck title)
+      - slides: Array of { title?: string, svg_code: string, notes?: string }
+    - Each slide's svg_code follows the same rules as svg_animation
+    - Navigation: ← → arrow keys, thumbnails, fullscreen (F key)
+    - Last slide → click next triggers "continue" to generate more slides
+    - Use for: presentations, tutorials, courses, multi-page explanations
 `;

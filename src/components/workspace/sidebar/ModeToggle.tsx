@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Gamepad2, Layout, PenTool, Shapes } from 'lucide-react';
+import { Activity, Gamepad2, Layout, PenTool, Shapes, Presentation } from 'lucide-react';
 import { UserContext } from '@/types';
 
 interface ModeToggleProps {
@@ -70,6 +70,27 @@ export const ModeToggle: React.FC<ModeToggleProps> = ({
             >
                 <Shapes className="w-3 h-3" />
                 SVG
+            </button>
+
+            <button
+                onClick={() => {
+                    const newMode = context.mode === 'presentation' ? 'default' : 'presentation';
+                    setContext(p => ({ ...p, mode: newMode }));
+                    onPlaySound('ACTIVATE');
+                    if (newMode === 'presentation') {
+                        showToast({ type: 'SUCCESS', title: 'Presentation Engine', description: 'Slide Deck Mode Activated' });
+                    } else {
+                        showToast({ type: 'INFO', title: 'Standard UI', description: 'Returned to Architect Mode' });
+                    }
+                }}
+                className={`text-[10px] flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 font-bold tracking-wider uppercase backdrop-blur-md ${context.mode === 'presentation'
+                        ? 'bg-amber-600/90 text-white border-amber-500 shadow-[0_0_20px_rgba(251,191,36,0.4)]'
+                        : 'bg-white/5 border-white/10 text-slate-500 hover:text-slate-300 hover:bg-white/10'
+                    }`}
+                data-testid="mode-toggle-ppt"
+            >
+                <Presentation className="w-3 h-3" />
+                PPT
             </button>
 
             <button

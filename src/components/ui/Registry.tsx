@@ -61,6 +61,9 @@ const VNStage = safeLazy(() => import('../galgame/VNStage'), 'VNStage');
 // SvgAnimation: Animated SVG scenes
 const SvgAnimation = safeLazy(() => import('../svg/SvgAnimation'), 'SvgAnimation');
 
+// Presentation: Slide deck with SVG slides
+const Presentation = safeLazy(() => import('../presentation/Presentation'), 'Presentation');
+
 /* -------------------------------------------------------------------------- */
 /*                            COMPONENT REGISTRY MAP                          */
 /* -------------------------------------------------------------------------- */
@@ -97,6 +100,7 @@ export const ComponentRegistry: Record<string, React.FC<any>> = {
   calendar: Calendar, 
   vn_stage: VNStage,
   svg_animation: SvgAnimation,
+  presentation: Presentation,
 
   // Lazy Components
   chart: ChartComponent,

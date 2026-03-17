@@ -8,6 +8,7 @@ import { useDeviceContext } from '@/components/DeviceContext';
 import { getAsset } from '@/services/svg';
 import { layoutElements } from '@/services/svg/layout';
 import type { LayoutItem } from '@/services/svg/layout';
+import { injectSymbols } from '@/services/svg/symbols';
 
 // ============================================================
 // VIEWBOX & ANIMATION
@@ -458,7 +459,7 @@ function sanitizeSvg(raw: string): string {
   return DOMPurify.sanitize(raw, {
     USE_PROFILES: { svg: true, svgFilters: true },
     ADD_TAGS: [
-      'animate', 'animateTransform', 'animateMotion',
+      'animate', 'animateTransform', 'animateMotion', 'use', 'symbol',
       'set', 'mpath', 'filter', 'feGaussianBlur',
       'feComposite', 'feBlend', 'feColorMatrix',
       'feFlood', 'feMerge', 'feMergeNode', 'feTurbulence',
@@ -514,7 +515,8 @@ const RawSvgRenderer: React.FC<{
   const sanitized = useMemo(() => {
     // Only update if SVG looks complete (has closing </svg> tag)
     if (svgCode.includes('</svg>')) {
-      const clean = sanitizeSvg(svgCode);
+      const withSymbols = injectSymbols(svgCode);
+      const clean = sanitizeSvg(withSymbols);
       lastValidSvg.current = clean;
       return clean;
     }

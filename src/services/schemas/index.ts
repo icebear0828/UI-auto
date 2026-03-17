@@ -11,6 +11,7 @@ import {
 } from "./composite";
 import { VNStageNode } from "./vn-stage";
 import { SvgAnimationNode } from "./svg-animation";
+import { PresentationNode } from "./presentation";
 
 // Import types needed for TypedUINode
 import type { ContainerProps } from "./layout";
@@ -25,6 +26,7 @@ import type {
 } from "./composite";
 import type { VNStageProps } from "./vn-stage";
 import type { SvgAnimationProps } from "./svg-animation";
+import type { PresentationProps } from "./presentation";
 
 // Import validateNode factory and re-export with bound schema
 import { validateNode as _validateNode, isComponentType, getComponentProps } from "./validation";
@@ -68,6 +70,7 @@ export const UINodeSchema: z.ZodType<any> = z.lazy(() =>
     CalendarNode,
     VNStageNode,
     SvgAnimationNode,
+    PresentationNode,
   ])
 );
 
@@ -112,7 +115,8 @@ export type TypedUINode =
   | { split_pane: SplitPaneProps }
   | { calendar: CalendarProps }
   | { vn_stage: VNStageProps }
-  | { svg_animation: SvgAnimationProps };
+  | { svg_animation: SvgAnimationProps }
+  | { presentation: PresentationProps };
 
 export type ComponentTypeKey = keyof TypedUINode extends infer K
   ? K extends string ? K : never
@@ -125,7 +129,7 @@ export type ValidComponentType =
   | 'textarea' | 'badge' | 'separator' | 'bento_container'
   | 'bento_card' | 'kanban' | 'switch' | 'slider' | 'tabs'
   | 'stepper' | 'timeline' | 'codeblock' | 'split_pane'
-  | 'calendar' | 'vn_stage' | 'svg_animation';
+  | 'calendar' | 'vn_stage' | 'svg_animation' | 'presentation';
 
 // ----------------------------------------------------------------------
 // RE-EXPORT ALL from sub-modules
@@ -178,3 +182,6 @@ export type { ImageAsset, VNCharacter, VNDialogue, VNChoice, VNStageProps } from
 
 export { SvgAnimationPropsSchema, SceneElementSchema } from "./svg-animation";
 export type { SvgAnimationProps, SvgCharacter, SvgStep, SvgSide, SvgEvent, SceneElement } from "./svg-animation";
+
+export { PresentationPropsSchema } from "./presentation";
+export type { PresentationProps, Slide } from "./presentation";

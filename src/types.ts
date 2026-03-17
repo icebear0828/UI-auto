@@ -81,7 +81,7 @@ export interface UserContext {
   role: 'admin' | 'user';
   device: 'desktop' | 'mobile';
   theme: 'dark' | 'light';
-  mode?: 'default' | 'galgame' | 'svg_animation';
+  mode?: 'default' | 'galgame' | 'svg_animation' | 'presentation';
 }
 
 export interface Message {
