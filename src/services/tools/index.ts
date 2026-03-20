@@ -5,6 +5,7 @@
 
 import { serviceLogger } from '@/services/logger';
 import { getTool, getAvailableToolNames } from './registry';
+import type { ToolResult } from './types';
 
 // Import all tool modules to trigger self-registration
 import './weather';
@@ -12,8 +13,7 @@ import './crypto';
 import './business';
 import './utilities';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- args and return are dynamic from AI tool calls
-export const executeTool = async (name: string, args: any): Promise<any> => {
+export const executeTool = async (name: string, args: Record<string, unknown>): Promise<ToolResult> => {
   serviceLogger.debug('ToolService', `Executing ${name}`, args);
 
   try {

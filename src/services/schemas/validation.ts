@@ -11,7 +11,7 @@ export interface ValidationResult<T = TypedUINode> {
   error?: string | z.ZodError;
 }
 
-export const validateNode = (node: unknown, UINodeSchema: z.ZodType<any>): ValidationResult => {
+export const validateNode = (node: unknown, UINodeSchema: z.ZodType<Record<string, unknown>>): ValidationResult => {
   if (!node) return { success: false, error: "Node is null" };
 
   const result = UINodeSchema.safeParse(node);
@@ -47,5 +47,5 @@ export function getComponentProps<T extends ValidComponentType>(
   node: TypedUINode,
   type: T
 ): ComponentPropsMap[T] {
-  return (node as any)[type];
+  return (node as Record<string, unknown>)[type] as ComponentPropsMap[T];
 }

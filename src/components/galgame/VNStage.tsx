@@ -15,7 +15,7 @@ interface VNStageProps {
   sfx?: string;
   onAction: (action: UIAction) => void;
   path?: string;
-  animation?: any;
+  animation?: { type?: string; duration?: string; delay?: number; trigger?: string };
 }
 
 export const VNStage: React.FC<VNStageProps> = ({ 

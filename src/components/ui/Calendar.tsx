@@ -2,11 +2,12 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTheme } from '@/components/ThemeContext';
+import type { UIAction } from '@/types';
 
 interface CalendarProps {
   label?: string;
   selectedDate?: string; // YYYY-MM-DD
-  onAction?: any;
+  onAction?: (action: UIAction) => void;
   path?: string;
 }
 

@@ -42,45 +42,48 @@ export const RenderChildren = ({ children, onAction, parentPath }: { children: U
   );
 };
 
-export function getByPath(obj: any, path: string): any {
+export function getByPath(obj: unknown, path: string): unknown {
   if (!path) return undefined;
   if (path === 'root') return obj;
-  
+
   const cleanPath = path.startsWith('root.') ? path.substring(5) : path;
-  
+
   const segments = cleanPath.split('.');
-  let current = obj;
-  
+  let current: unknown = obj;
+
   for (const key of segments) {
     if (current === undefined || current === null) return undefined;
-    current = current[key];
+    current = (current as Record<string, unknown>)[key];
   }
   return current;
 }
 
-export function setByPath<T>(obj: T, path: string, value: any): T {
+export function setByPath<T>(obj: T, path: string, value: unknown): T {
   if (!path) return value as unknown as T;
-  
+
   const cleanPath = path.startsWith('root.') ? path.substring(5) : path;
-  if (!cleanPath) return value; 
+  if (!cleanPath) return value as unknown as T;
 
   const segments = cleanPath.split('.');
 
-  const update = (current: any, depth: number): any => {
+  const update = (current: unknown, depth: number): unknown => {
     if (depth === segments.length) return value;
     const key = segments[depth];
-    
-    let clone: any;
+
+    let clone: Record<string, unknown> | unknown[];
     if (Array.isArray(current)) {
       clone = [...current];
     } else if (current && typeof current === 'object') {
-      clone = { ...current };
+      clone = { ...(current as Record<string, unknown>) };
     } else {
       const isIndex = !isNaN(Number(key));
       clone = isIndex ? [] : {};
     }
 
-    clone[key] = update(current ? current[key] : undefined, depth + 1);
+    (clone as Record<string, unknown>)[key] = update(
+      current ? (current as Record<string, unknown>)[key] : undefined,
+      depth + 1
+    );
     return clone;
   };
 

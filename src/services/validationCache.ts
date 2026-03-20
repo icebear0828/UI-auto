@@ -7,11 +7,14 @@
 
 import { validateNode as zodValidate } from './schemas';
 
+import type { TypedUINode } from './schemas';
+import type { ZodError } from 'zod';
+
 // Simplified type that stores normalized results
 interface ValidationResult {
     success: boolean;
-    data: any;
-    error: any;
+    data: TypedUINode | null;
+    error: string | ZodError | null;
 }
 
 const CACHE_SIZE = 512;
@@ -41,7 +44,7 @@ function cyrb53(str: string, seed = 0): number {
  * @param node - UI node to validate
  * @returns Cached or freshly computed validation result
  */
-export function cachedValidateNode(node: any): ValidationResult {
+export function cachedValidateNode(node: Record<string, unknown>): ValidationResult {
     // Compute hash key from node content
     const nodeStr = JSON.stringify(node);
     const key = cyrb53(nodeStr);

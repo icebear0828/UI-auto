@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RenderChildren } from './renderUtils';
 import { useTheme } from '@/components/ThemeContext';
+import type { TabsProps, TabItem } from '@/services/schemas';
+import type { RendererInjectedProps } from '@/types';
 
-export const Tabs = ({ items = [], defaultValue, variant = 'DEFAULT', onAction, path }: any) => {
+export const Tabs = ({ items = [], defaultValue, variant = 'DEFAULT', onAction, path }: TabsProps & RendererInjectedProps) => {
   const { theme } = useTheme();
   // Default to first item ID if no default provided
   const [activeTab, setActiveTab] = useState(defaultValue || (items[0] ? items[0].id : null));
@@ -17,7 +19,7 @@ export const Tabs = ({ items = [], defaultValue, variant = 'DEFAULT', onAction, 
     <div className="w-full flex flex-col">
       {/* Tab List */}
       <div className={`flex gap-1 overflow-x-auto no-scrollbar ${variant === 'UNDERLINE' ? 'border-b border-white/10' : ''}`}>
-        {items.map((item: any) => {
+        {items.map((item: TabItem) => {
           const isActive = activeTab === item.id;
           return (
             <button
@@ -62,11 +64,11 @@ export const Tabs = ({ items = [], defaultValue, variant = 'DEFAULT', onAction, 
       {/* Tab Content */}
       <div className="mt-4 min-h-[100px] relative">
         <AnimatePresence mode="wait">
-          {items.map((item: any) => {
+          {items.map((item: TabItem) => {
             if (item.id !== activeTab) return null;
             
             // Construct path for children to enable editing inside tabs
-            const itemIndex = items.findIndex((i: any) => i.id === item.id);
+            const itemIndex = items.findIndex((i: TabItem) => i.id === item.id);
             const contentPath = path ? `${path}.items.${itemIndex}.content` : undefined;
 
             return (

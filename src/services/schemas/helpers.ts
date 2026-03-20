@@ -4,13 +4,13 @@ import { z } from "zod";
 // RECURSIVE SCHEMA REGISTRATION
 // ----------------------------------------------------------------------
 
-let _uiNodeSchema: z.ZodType<any> | null = null;
+let _uiNodeSchema: z.ZodType<Record<string, unknown>> | null = null;
 
-export function registerUINodeSchema(schema: z.ZodType<any>) {
+export function registerUINodeSchema(schema: z.ZodType<Record<string, unknown>>) {
   _uiNodeSchema = schema;
 }
 
-export function getUINodeSchema(): z.ZodType<any> {
+export function getUINodeSchema(): z.ZodType<Record<string, unknown>> {
   if (!_uiNodeSchema) throw new Error("UINodeSchema not registered");
   return _uiNodeSchema;
 }
@@ -51,6 +51,6 @@ export const NodeArray = z.array(z.lazy(() => getUINodeSchema())).optional().def
 // Flexible content: accepts string, single UINode, or UINode[] (AI generates all three forms)
 export const FlexContent = z.union([
   z.array(z.lazy(() => getUINodeSchema())),
-  z.lazy(() => getUINodeSchema()).transform((node: any) => [node]),
+  z.lazy(() => getUINodeSchema()).transform((node: Record<string, unknown>) => [node]),
   z.string().transform((s: string) => [{ text: { content: s } }]),
 ]).optional().default([]);

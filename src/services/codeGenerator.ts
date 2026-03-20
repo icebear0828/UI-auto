@@ -8,7 +8,7 @@ const toPascalCase = (str: string): string => {
 };
 
 // 2. 漂亮打印：递归序列化，而不是一行 JSON
-const serializeProp = (value: any, depth: number = 0): string => {
+const serializeProp = (value: unknown, depth: number = 0): string => {
   const indent = "  ".repeat(depth);
   
   if (value === null || value === undefined) return "null";
@@ -21,13 +21,14 @@ const serializeProp = (value: any, depth: number = 0): string => {
     return `[\n${indent}  ${items}\n${indent}]`;
   }
   
-  if (typeof value === "object") {
+  if (typeof value === "object" && value !== null) {
+    const obj = value as Record<string, unknown>;
     // 动作对象特殊处理，显示得更像代码
-    if (value.type && value.payload) {
-        return `{ type: "${value.type}", payload: ${serializeProp(value.payload, depth)} }`;
+    if (obj.type && obj.payload) {
+        return `{ type: "${obj.type}", payload: ${serializeProp(obj.payload, depth)} }`;
     }
 
-    const entries = Object.entries(value);
+    const entries = Object.entries(obj);
     if (entries.length === 0) return "{}";
     
     const props = entries
@@ -47,7 +48,7 @@ const generateJSX = (node: UINode, depth: number = 0): string => {
   if (!key) return "";
 
   const ComponentName = toPascalCase(key);
-  const props = node[key] || {};
+  const props = (node[key] || {}) as Record<string, unknown>;
   const { children, ...restProps } = props;
 
   const indentStr = "  ".repeat(depth);
@@ -58,7 +59,7 @@ const generateJSX = (node: UINode, depth: number = 0): string => {
     if (v === true) return k; // Boolean shorthand
     if (typeof v === "string") {
       // Use curly brace syntax for strings containing quotes or newlines
-      if ((v as string).includes('"') || (v as string).includes('\n') || (v as string).length > 100) {
+      if (v.includes('"') || v.includes('\n') || v.length > 100) {
         return `${k}={${JSON.stringify(v)}}`;
       }
       return `${k}="${v}"`;
@@ -91,7 +92,8 @@ export const generateReactCode = (rootNode: UINode): string => {
     const key = Object.keys(node)[0];
     if (key) {
       importsSet.add(toPascalCase(key));
-      const children = node[key]?.children;
+      const nodeProps = node[key] as Record<string, unknown> | undefined;
+      const children = nodeProps?.children;
       if (Array.isArray(children)) children.forEach(scanImports);
     }
   };

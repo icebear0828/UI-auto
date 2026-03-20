@@ -35,7 +35,7 @@ export function getCachedVariants(config: AnimationConfig | undefined): MotionVa
         visible: {
             ...baseVariants.visible,
             transition: {
-                ...(baseVariants.visible as any).transition,
+                ...((baseVariants.visible as Record<string, unknown>).transition as Record<string, unknown>),
                 ...customTransition
             }
         }

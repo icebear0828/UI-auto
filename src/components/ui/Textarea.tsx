@@ -4,8 +4,10 @@ import { useTheme } from '@/components/ThemeContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { TextareaProps } from '@/services/schemas';
+import type { RendererInjectedProps } from '@/types';
 
-export const Textarea = ({ label, placeholder, value = '', validation, onAction, path }: any) => {
+export const Textarea = ({ label, placeholder, value = '', validation, onAction, path }: TextareaProps & RendererInjectedProps) => {
   const { theme } = useTheme();
   const [localValue, setLocalValue] = useState(value);
   const [error, setError] = useState<string | null>(null);
