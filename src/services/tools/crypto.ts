@@ -41,6 +41,7 @@ const fetchRealCrypto = async (coinId: string) => {
 };
 
 registerTool('get_crypto_price', async (args) => {
-  if (!args.coin_id) throw new Error("Missing 'coin_id' argument");
-  return await fetchRealCrypto(args.coin_id);
+  const coinId = args.coin_id;
+  if (typeof coinId !== 'string') throw new Error("Missing 'coin_id' argument");
+  return await fetchRealCrypto(coinId);
 });

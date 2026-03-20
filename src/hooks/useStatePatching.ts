@@ -46,7 +46,7 @@ export const applyPatchState = (
 
     // Merge partial update into props
     const newProps = {
-        ...currentProps,
+        ...(currentProps as Record<string, unknown>),
         ...action.payload
     };
 
@@ -107,8 +107,8 @@ export const applyCycleState = (
     }
 
     const newProps = {
-        ...currentProps,
-        ...nextState,
+        ...(currentProps as Record<string, unknown>),
+        ...(nextState as Record<string, unknown>),
         action: newAction
     };
 

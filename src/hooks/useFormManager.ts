@@ -1,6 +1,6 @@
 /**
  * Form Manager Utilities
- * 
+ *
  * Extracted from useGenUI.ts for form data collection and reset
  */
 
@@ -9,36 +9,39 @@ import { UINode, Message } from '@/types';
 /**
  * Recursively collect form data from a UI node tree
  */
-export function collectFormData(node: any): Record<string, any> {
-    let data: Record<string, any> = {};
+export function collectFormData(node: Record<string, unknown>): Record<string, unknown> {
+    let data: Record<string, unknown> = {};
 
     if (!node || typeof node !== 'object') return data;
 
     // Check if current node is an input with a label
-    if (node.input && node.input.label) {
-        const key = node.input.label;
-        const value = node.input.value || "";
-        data[key] = value;
+    const input = node.input as Record<string, unknown> | undefined;
+    if (input && typeof input.label === 'string') {
+        data[input.label] = input.value || "";
     }
 
     // Check switch
-    if (node.switch && node.switch.label) {
-        data[node.switch.label] = node.switch.value;
+    const sw = node.switch as Record<string, unknown> | undefined;
+    if (sw && typeof sw.label === 'string') {
+        data[sw.label] = sw.value;
     }
 
     // Check slider
-    if (node.slider && node.slider.label) {
-        data[node.slider.label] = node.slider.value;
+    const slider = node.slider as Record<string, unknown> | undefined;
+    if (slider && typeof slider.label === 'string') {
+        data[slider.label] = slider.value;
     }
 
     // Recursive traversal
     Object.values(node).forEach(childValue => {
         if (Array.isArray(childValue)) {
             childValue.forEach(child => {
-                data = { ...data, ...collectFormData(child) };
+                if (child && typeof child === 'object') {
+                    data = { ...data, ...collectFormData(child as Record<string, unknown>) };
+                }
             });
         } else if (typeof childValue === 'object' && childValue !== null) {
-            data = { ...data, ...collectFormData(childValue) };
+            data = { ...data, ...collectFormData(childValue as Record<string, unknown>) };
         }
     });
 
@@ -48,15 +51,18 @@ export function collectFormData(node: any): Record<string, any> {
 /**
  * Recursively clear form values in a UI node tree
  */
-export function clearFormValues(node: any): any {
+export function clearFormValues(node: unknown): unknown {
     if (Array.isArray(node)) {
         return node.map(clearFormValues);
     }
     if (node && typeof node === 'object') {
-        const newNode = { ...node };
-        if (newNode.input) newNode.input.value = "";
-        if (newNode.switch) newNode.switch.value = false;
-        if (newNode.slider) newNode.slider.value = newNode.slider.min || 0;
+        const newNode = { ...(node as Record<string, unknown>) };
+        const input = newNode.input as Record<string, unknown> | undefined;
+        if (input) { newNode.input = { ...input, value: "" }; }
+        const sw = newNode.switch as Record<string, unknown> | undefined;
+        if (sw) { newNode.switch = { ...sw, value: false }; }
+        const slider = newNode.slider as Record<string, unknown> | undefined;
+        if (slider) { newNode.slider = { ...slider, value: (slider.min as number) || 0 }; }
 
         // Recurse keys
         Object.keys(newNode).forEach(key => {
@@ -88,7 +94,7 @@ export function applyFormReset(messages: Message[]): Message[] {
 
     const next = [...messages];
     const oldUi = next[actualIndex].uiNode;
-    const newUi = clearFormValues(oldUi);
+    const newUi = clearFormValues(oldUi) as UINode;
 
     next[actualIndex] = { ...next[actualIndex], uiNode: newUi };
     return next;

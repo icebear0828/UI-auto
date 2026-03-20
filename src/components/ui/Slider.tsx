@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '@/components/ThemeContext';
+import type { SliderProps } from '@/services/schemas';
+import type { RendererInjectedProps } from '@/types';
 
-export const Slider = ({ label, min = 0, max = 100, value = 50, step = 1, onAction, path, ariaLabel }: any) => {
+export const Slider = ({ label, min = 0, max = 100, value = 50, step = 1, onAction, path, ariaLabel }: SliderProps & RendererInjectedProps) => {
   const { theme } = useTheme();
   const [localValue, setLocalValue] = useState(value);
 

@@ -3,13 +3,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { RenderChildren } from './renderUtils';
 import { useTheme } from '@/components/ThemeContext';
 import { useDeviceContext } from '@/components/DeviceContext';
-import { UINode } from '@/types';
+import { UINode, type UIAction } from '@/types';
 
 interface SplitPaneProps {
   direction?: 'ROW' | 'COL';
   initialSize?: number; // Percentage (0-100)
   children: UINode[];
-  onAction?: any;
+  onAction?: (action: UIAction) => void;
   path?: string;
 }
 

@@ -37,7 +37,7 @@ export { isComponentType, getComponentProps };
 // ASSEMBLE UINodeSchema UNION
 // ----------------------------------------------------------------------
 
-export const UINodeSchema: z.ZodType<any> = z.lazy(() =>
+export const UINodeSchema: z.ZodType<Record<string, unknown>> = z.lazy(() =>
   z.union([
     ContainerNode,
     HeroNode,

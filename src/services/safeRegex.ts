@@ -162,11 +162,11 @@ export function safeRegexTest(
             success: true,
             matched
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         return {
             success: false,
             matched: false,
-            error: error.message
+            error: error instanceof Error ? error.message : String(error)
         };
     }
 }

@@ -7,19 +7,23 @@
  * It tracks open braces/brackets and quotes to determine what is needed to close the structure.
  */
 
-export function parsePartialJson(jsonString: string): any {
+export function parsePartialJson(jsonString: string): Record<string, unknown> | null {
   // If empty, return null
   if (!jsonString.trim()) return null;
 
   try {
     // 1. Try parsing as-is (optimistic)
-    return JSON.parse(jsonString);
-  } catch (e) {
+    const parsed: unknown = JSON.parse(jsonString);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed as Record<string, unknown>;
+    return null;
+  } catch {
     // 2. If that fails, try to repair it
     const fixed = fixJson(jsonString);
     try {
-      return JSON.parse(fixed);
-    } catch (e2) {
+      const parsed: unknown = JSON.parse(fixed);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed as Record<string, unknown>;
+      return null;
+    } catch {
       // If still fails, return null or last valid state (not handled here, handled by caller)
       return null;
     }

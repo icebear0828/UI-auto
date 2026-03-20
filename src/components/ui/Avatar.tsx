@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { useTheme } from '@/components/ThemeContext';
+import type { AvatarProps } from '@/services/schemas';
 
-export const Avatar = ({ initials, src, status }: any) => {
+export const Avatar = ({ initials, src, status }: AvatarProps) => {
   const { theme } = useTheme();
   const statusColor = status ? (theme.avatar.status[status as keyof typeof theme.avatar.status] || theme.avatar.status.OFFLINE) : '';
 

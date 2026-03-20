@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { RenderChildren } from './renderUtils';
 import { useTheme } from '@/components/ThemeContext';
-import { UINode } from '@/types';
+import { UINode, type UIAction } from '@/types';
 
 interface StepperItem {
   id: string;
@@ -15,7 +15,7 @@ interface StepperItem {
 interface StepperProps {
   currentStep: number;
   items: StepperItem[];
-  onAction?: any;
+  onAction?: (action: UIAction) => void;
   path?: string;
 }
 

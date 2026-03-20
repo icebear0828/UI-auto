@@ -34,7 +34,7 @@ interface SidebarProps {
     onSubmit: (e: React.FormEvent) => void;
     onSettingsClick: () => void;
     onPlaySound: (sound: string) => void;
-    showToast: (options: any) => void;
+    showToast: (options: { type: string; title: string; description?: string }) => void;
     messagesEndRef: React.RefObject<HTMLDivElement>;
     canCancel: boolean;
     onCancel: () => void;

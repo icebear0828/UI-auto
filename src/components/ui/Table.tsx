@@ -3,8 +3,10 @@ import React, { useState, useMemo, useCallback } from 'react';
 import DynamicRenderer from '@/components/DynamicRenderer';
 import { useTheme } from '@/components/ThemeContext';
 import { Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ChevronsUpDown, Download, CheckSquare, Square } from 'lucide-react';
+import type { TableProps, TableCell } from '@/services/schemas';
+import type { RendererInjectedProps } from '@/types';
 
-export const Table = ({ headers, rows, onAction, path }: any) => {
+export const Table = ({ headers, rows, onAction, path }: TableProps & RendererInjectedProps) => {
   const { theme } = useTheme();
 
   // --- Local State for Interactive Features ---
@@ -69,13 +71,16 @@ export const Table = ({ headers, rows, onAction, path }: any) => {
     // 1. Filter
     if (filterText) {
       result = result.filter(row => 
-        row.some((cell: any) => {
+        row.some((cell: TableCell) => {
            // Try to extract text from simple cells
            if (typeof cell === 'string') return cell.toLowerCase().includes(filterText.toLowerCase());
            if (typeof cell === 'number') return String(cell).includes(filterText);
            // Simple check for nested text nodes
-           if (cell?.text?.content) return cell.text.content.toLowerCase().includes(filterText.toLowerCase());
-           if (cell?.badge?.label) return cell.badge.label.toLowerCase().includes(filterText.toLowerCase());
+           if (cell && typeof cell === 'object') {
+             const obj = cell as Record<string, Record<string, string>>;
+             if (obj.text?.content) return obj.text.content.toLowerCase().includes(filterText.toLowerCase());
+             if (obj.badge?.label) return obj.badge.label.toLowerCase().includes(filterText.toLowerCase());
+           }
            return false;
         })
       );
@@ -88,8 +93,16 @@ export const Table = ({ headers, rows, onAction, path }: any) => {
         const cellB = b[sortConfig.key];
         
         // Extract sortable values
-        const valA = typeof cellA === 'object' ? (cellA?.text?.content || cellA?.badge?.label || '') : cellA;
-        const valB = typeof cellB === 'object' ? (cellB?.text?.content || cellB?.badge?.label || '') : cellB;
+        const extractSort = (c: TableCell): string | number => {
+          if (c && typeof c === 'object') {
+            const obj = c as Record<string, Record<string, string>>;
+            return obj.text?.content || obj.badge?.label || '';
+          }
+          if (typeof c === 'string' || typeof c === 'number') return c;
+          return '';
+        };
+        const valA = extractSort(cellA);
+        const valB = extractSort(cellB);
 
         if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
         if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -170,7 +183,7 @@ export const Table = ({ headers, rows, onAction, path }: any) => {
           </thead>
           <tbody className="divide-y divide-zinc-800/50">
             {paginatedRows.length > 0 ? (
-                paginatedRows.map((row: any[], i: number) => {
+                paginatedRows.map((row: TableCell[], i: number) => {
                     // We need to map back to original index for 'path' to work correctly with actions? 
                     // Actually for a filtered/sorted view, static pathing can be tricky.
                     // For now, we'll use the visual index for rendering children actions. 
@@ -184,7 +197,7 @@ export const Table = ({ headers, rows, onAction, path }: any) => {
                                 {selectedRows.has(visualRowIndex) ? <CheckSquare className="w-4 h-4 text-indigo-400" /> : <Square className="w-4 h-4" />}
                               </button>
                             </td>
-                            {row.map((cell: any, j: number) => {
+                            {row.map((cell: TableCell, j: number) => {
                             const cellPath = path ? `${path}.rows.${visualRowIndex}.${j}` : undefined;
                             return (
                                 <td key={j} className={theme.table.cell}>

@@ -1,5 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- args and return are dynamic from AI tool calls
-export type ToolHandler = (args: any) => Promise<any>;
+export interface ToolResult {
+  [key: string]: unknown;
+  error?: boolean;
+  message?: string;
+  isMock?: boolean;
+  mockReason?: string;
+}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ToolResult = any;
+export type ToolHandler = (args: Record<string, unknown>) => Promise<ToolResult>;

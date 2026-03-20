@@ -87,7 +87,9 @@ export const useUIGeneration = (deps: UseUIGenerationDeps) => {
       const finalResponse = parsePartialJson(rawAccumulated);
 
       if (finalResponse?.tool_call) {
-        const { name, arguments: args } = finalResponse.tool_call;
+        const toolCall = finalResponse.tool_call as Record<string, unknown>;
+        const name = String(toolCall.name);
+        const args = (toolCall.arguments || {}) as Record<string, unknown>;
         setMessages(prev => [...prev, { role: 'system', content: `⚡ Orchestrating: ${name} with args ${JSON.stringify(args)}` }]);
         const toolResult = await executeTool(name, args);
 

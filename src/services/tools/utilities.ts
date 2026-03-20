@@ -1,7 +1,9 @@
 import { registerTool } from './registry';
 
 registerTool('calculate_loan', async (args) => {
-  const { amount, rate, years } = args;
+  const amount = Number(args.amount);
+  const rate = Number(args.rate);
+  const years = Number(args.years);
   if (!amount || !rate || !years) throw new Error("Missing loan parameters (amount, rate, years)");
 
   const monthlyRate = (rate / 100) / 12;
@@ -21,20 +23,23 @@ registerTool('calculate_loan', async (args) => {
 });
 
 registerTool('translate_text', async (args) => {
-  const { text, target_language } = args;
-  if (!text || !target_language) throw new Error("Missing parameters for translation");
+  const text = String(args.text ?? '');
+  const targetLanguage = String(args.target_language ?? '');
+  if (!text || !targetLanguage) throw new Error("Missing parameters for translation");
   await new Promise(resolve => setTimeout(resolve, 800));
   return {
     original: text,
-    translated: `[${target_language}] ${text} (Translated)`,
+    translated: `[${targetLanguage}] ${text} (Translated)`,
     sourceLanguage: "Detected",
-    targetLanguage: target_language,
+    targetLanguage,
     confidence: 0.98
   };
 });
 
 registerTool('currency_convert', async (args) => {
-  const { amount, from, to } = args;
+  const amount = Number(args.amount);
+  const from = String(args.from ?? '');
+  const to = String(args.to ?? '');
   const rates: Record<string, number> = { 'USD': 1, 'EUR': 0.92, 'GBP': 0.79, 'JPY': 150.5, 'CNY': 7.2 };
   const base = amount / (rates[from] || 1);
   const result = base * (rates[to] || 1);
@@ -48,7 +53,7 @@ registerTool('currency_convert', async (args) => {
 });
 
 registerTool('get_news', async (args) => {
-  const cat = args.category || 'general';
+  const cat = String(args.category ?? 'general');
   await new Promise(resolve => setTimeout(resolve, 1000));
   return {
     category: cat,
@@ -62,8 +67,9 @@ registerTool('get_news', async (args) => {
 });
 
 registerTool('get_stock_price', async (args) => {
-  if (!args.symbol) throw new Error("Missing 'symbol' argument");
-  const ticker = args.symbol.toUpperCase();
+  const symbol = args.symbol;
+  if (typeof symbol !== 'string') throw new Error("Missing 'symbol' argument");
+  const ticker = symbol.toUpperCase();
   const basePrice = Math.random() * 200 + 50;
 
   const data = [];
@@ -97,15 +103,16 @@ registerTool('get_stock_price', async (args) => {
 });
 
 registerTool('search_knowledge', async (args) => {
-  if (!args.query) throw new Error("Missing 'query' argument");
+  const query = args.query;
+  if (typeof query !== 'string') throw new Error("Missing 'query' argument");
   await new Promise(resolve => setTimeout(resolve, 800));
   return {
-    query: args.query,
+    query,
     results: [
       {
         source: "Internal Knowledge Base",
         title: "System Architecture v2.4",
-        excerpt: `Search result for "${args.query}": The distributed node system handles 50k req/s with auto-scaling groups in us-east-1 and eu-west-1.`
+        excerpt: `Search result for "${query}": The distributed node system handles 50k req/s with auto-scaling groups in us-east-1 and eu-west-1.`
       },
       {
         source: "API Documentation",
@@ -113,6 +120,6 @@ registerTool('search_knowledge', async (args) => {
         excerpt: "Standard tier allows 1000 requests per minute. Enterprise tier offers dedicated throughput."
       }
     ],
-    generatedSummary: `Based on internal docs, "${args.query}" relates to our high-availability cluster config deployed last Q3. It supports multi-region failover.`
+    generatedSummary: `Based on internal docs, "${query}" relates to our high-availability cluster config deployed last Q3. It supports multi-region failover.`
   };
 });

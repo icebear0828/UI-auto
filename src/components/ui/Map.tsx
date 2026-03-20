@@ -2,8 +2,9 @@
 import React from 'react';
 import { Map as MapIcon } from 'lucide-react';
 import { useTheme } from '@/components/ThemeContext';
+import type { MapProps, MapMarker } from '@/services/schemas';
 
-export const MapWidget = ({ label, style = 'DARK', markers = [] }: any) => {
+export const MapWidget = ({ label, style = 'DARK', markers = [] }: MapProps) => {
   const { theme } = useTheme();
   const mapTheme = theme.map.styles[style as keyof typeof theme.map.styles] || theme.map.styles.DARK;
 
@@ -30,7 +31,7 @@ export const MapWidget = ({ label, style = 'DARK', markers = [] }: any) => {
       </div>
 
       {/* Markers */}
-      {markers && markers.map((m: any, i: number) => {
+      {markers && markers.map((m: MapMarker, i: number) => {
         const top = 20 + ((i * 37) % 60) + '%';
         const left = 20 + ((i * 53) % 60) + '%';
         

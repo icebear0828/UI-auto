@@ -7,8 +7,8 @@ interface TelemetryEvent {
   timestamp: number;
   type: 'metric' | 'event';
   name: string;
-  value: any;
-  details?: any;
+  value: unknown;
+  details?: unknown;
 }
 
 type TelemetryListener = (event: TelemetryEvent) => void;

@@ -59,7 +59,7 @@ export type {
 // 3.1 Recursive Data Structure & 3.2 Action Protocol
 export interface UIAction {
   type: string;
-  payload?: any;
+  payload?: Record<string, unknown>;
   // For local state updates
   path?: string; // Dot notation path e.g. "0.children.1.input.value"
 }
@@ -72,9 +72,14 @@ export interface UIAction {
  * For post-validation code, use TypedUINode from './services/schemas'
  * which provides a fully discriminated union with typed props.
  */
-export type UINode = {
-  [key: string]: any;
-};
+export type UINode = Record<string, unknown>;
+
+/** Props injected by DynamicRenderer into every component */
+export interface RendererInjectedProps {
+  onAction?: (action: UIAction) => void;
+  path?: string;
+  onError?: (error: Error, node: UINode, path: string) => void;
+}
 
 // User Context for 1.1 Implicit Input
 export interface UserContext {

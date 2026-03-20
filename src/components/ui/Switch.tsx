@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '@/components/ThemeContext';
 import { motion } from 'framer-motion';
+import type { SwitchProps } from '@/services/schemas';
+import type { RendererInjectedProps } from '@/types';
 
-export const Switch = ({ label, value = false, onAction, path, ariaLabel }: any) => {
+export const Switch = ({ label, value = false, onAction, path, ariaLabel }: SwitchProps & RendererInjectedProps) => {
   const { theme } = useTheme();
   const [isOn, setIsOn] = useState(value);
 

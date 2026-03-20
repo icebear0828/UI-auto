@@ -2,24 +2,31 @@
 import React, { useState, useEffect } from 'react';
 import { Reorder } from 'framer-motion';
 import { Plus, MoreHorizontal, GripVertical } from 'lucide-react';
+import type { KanbanProps, KanbanColumn } from '@/services/schemas';
+import type { RendererInjectedProps } from '@/types';
 
-interface KanbanItem {
-  id: string;
-  content: string;
+interface EnrichedKanbanItem {
+  _dragId: string;
+  content?: string;
+  title?: string;
+  description?: string;
+  id?: string;
   tag?: string;
+  [key: string]: unknown;
 }
 
-interface KanbanColumn {
+interface EnrichedKanbanColumn {
   title: string;
-  color: string;
-  items: (string | KanbanItem)[];
+  color?: string;
+  items: EnrichedKanbanItem[];
+  [key: string]: unknown;
 }
 
-export const Kanban = ({ columns = [], onAction, path }: { columns: KanbanColumn[], onAction?: any, path?: string }) => {
+export const Kanban = ({ columns = [], onAction, path }: KanbanProps & RendererInjectedProps) => {
   
   // Local state to manage columns immediately during drag
   // We wrap items in an object with a guaranteed ID to satisfy Reorder requirements
-  const [localColumns, setLocalColumns] = useState<any[]>([]);
+  const [localColumns, setLocalColumns] = useState<EnrichedKanbanColumn[]>([]);
 
   useEffect(() => {
     // Transform props to stable local state with IDs
@@ -30,14 +37,14 @@ export const Kanban = ({ columns = [], onAction, path }: { columns: KanbanColumn
         // Ensure ID exists for Reorder key
         return {
           ...itemObj,
-          _dragId: (itemObj as any).id || `item-${Math.random().toString(36).substr(2, 9)}-${idx}`
+          _dragId: ('id' in itemObj && typeof itemObj.id === 'string' ? itemObj.id : null) || `item-${Math.random().toString(36).substr(2, 9)}-${idx}`
         };
       })
     }));
     setLocalColumns(transformed);
   }, [columns]);
 
-  const handleReorder = (colIndex: number, newItems: any[]) => {
+  const handleReorder = (colIndex: number, newItems: EnrichedKanbanItem[]) => {
     // 1. Update Local State (Immediate Visual Feedback)
     const newColumns = [...localColumns];
     newColumns[colIndex] = { ...newColumns[colIndex], items: newItems };
@@ -58,7 +65,7 @@ export const Kanban = ({ columns = [], onAction, path }: { columns: KanbanColumn
       onAction({
         type: 'PATCH_STATE',
         path: `${path}.columns.${colIndex}.items`,
-        payload: cleanItems
+        payload: cleanItems as unknown as Record<string, unknown>
       });
     }
   };
@@ -91,7 +98,7 @@ export const Kanban = ({ columns = [], onAction, path }: { columns: KanbanColumn
                  onReorder={(newItems) => handleReorder(colIdx, newItems)}
                  className="flex flex-col gap-3"
                >
-                 {col.items.map((item: any) => (
+                 {col.items.map((item: EnrichedKanbanItem) => (
                     <Reorder.Item 
                         key={item._dragId} 
                         value={item}

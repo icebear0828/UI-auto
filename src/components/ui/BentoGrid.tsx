@@ -2,8 +2,10 @@
 import React from 'react';
 import { RenderChildren } from './renderUtils';
 import { useDeviceContext } from '@/components/DeviceContext';
+import type { BentoContainerProps, BentoCardProps } from '@/services/schemas';
+import type { RendererInjectedProps } from '@/types';
 
-export const BentoContainer = ({ children, onAction, path }: any) => {
+export const BentoContainer = ({ children, onAction, path }: BentoContainerProps & RendererInjectedProps) => {
   const { isMobile } = useDeviceContext();
 
   // 🔧 Mobile: 2-column grid, Desktop: 4-column grid
@@ -16,7 +18,7 @@ export const BentoContainer = ({ children, onAction, path }: any) => {
   );
 };
 
-export const BentoCard = ({ children, title, colSpan = 1, rowSpan = 1, variant = 'DEFAULT', bgImage, onAction, path }: any) => {
+export const BentoCard = ({ children, title, colSpan = 1, rowSpan = 1, variant = 'DEFAULT', bgImage, onAction, path }: BentoCardProps & RendererInjectedProps) => {
   const colSpanClass = {
     1: 'md:col-span-1',
     2: 'md:col-span-2',

@@ -1,14 +1,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Trash2, Type, Layout, MousePointer2, Box, Layers } from 'lucide-react';
-import { UINode } from '@/types';
+import { UINode, UIAction } from '@/types';
 import { getByPath } from './ui/renderUtils';
 
 interface InspectorPanelProps {
   rootNode: UINode;
   selectedPath: string;
   onClose: () => void;
-  onAction: (action: any) => void;
+  onAction: (action: UIAction) => void;
 }
 
 // Internal Debounced Input to prevent history spamming
@@ -91,7 +91,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({ rootNode, select
     });
   };
 
-  const renderField = (key: string, value: any) => {
+  const renderField = (key: string, value: unknown) => {
     if (key === 'children') return null; 
     
     const label = key.replace(/([A-Z])/g, ' $1').toLowerCase();

@@ -77,6 +77,7 @@ const fetchRealWeather = async (location: string) => {
 };
 
 registerTool('get_weather', async (args) => {
-  if (!args.location) throw new Error("Missing 'location' argument");
-  return await fetchRealWeather(args.location);
+  const location = args.location;
+  if (typeof location !== 'string') throw new Error("Missing 'location' argument");
+  return await fetchRealWeather(location);
 });

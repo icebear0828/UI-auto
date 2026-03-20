@@ -10,10 +10,10 @@ describe('streamParser', () => {
                 expect(result).toEqual({ name: 'test', value: 123 });
             });
 
-            it('should parse valid JSON array', () => {
+            it('should return null for JSON arrays (only objects are valid UINodes)', () => {
                 const json = '[1, 2, 3]';
                 const result = parsePartialJson(json);
-                expect(result).toEqual([1, 2, 3]);
+                expect(result).toBeNull();
             });
 
             it('should parse nested JSON', () => {
@@ -44,10 +44,10 @@ describe('streamParser', () => {
         });
 
         describe('incomplete JSON - unclosed arrays', () => {
-            it('should fix single unclosed array', () => {
+            it('should return null for unclosed top-level array (only objects are valid UINodes)', () => {
                 const json = '[1, 2, 3';
                 const result = parsePartialJson(json);
-                expect(result).toEqual([1, 2, 3]);
+                expect(result).toBeNull();
             });
 
             it('should fix nested array in object', () => {

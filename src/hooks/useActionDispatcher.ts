@@ -35,10 +35,10 @@ interface DispatcherContext {
         canRedo: boolean;
     };
     modalActions: {
-        openModal: (node: { title?: string; content: any }) => void;
+        openModal: (node: { title?: string; content: unknown }) => void;
         closeModal: () => void;
     };
-    onFormSubmit: (formData: Record<string, any>) => Promise<void>;
+    onFormSubmit: (formData: Record<string, unknown>) => Promise<void>;
     dispatch: (action: UIAction) => Promise<void>;
 }
 
@@ -62,7 +62,7 @@ const handleSequence: ActionHandler = async (action, ctx) => {
 };
 
 const handleDelay: ActionHandler = async (action) => {
-    const ms = action.payload?.ms || 500;
+    const ms = Number(action.payload?.ms) || 500;
     await new Promise(resolve => setTimeout(resolve, ms));
 };
 
@@ -79,8 +79,8 @@ const handleGoBack: ActionHandler = (_, ctx) => {
 };
 
 const handleNavigate: ActionHandler = (action) => {
-    const { url } = action.payload || {};
-    if (url) {
+    const url = action.payload?.url;
+    if (typeof url === 'string') {
         window.open(url, '_blank', 'noopener,noreferrer');
     }
 };
@@ -293,10 +293,11 @@ const handleTriggerEffect: ActionHandler = (action, ctx) => {
             // AI passes raw confetti config
             const config = action.payload?.config;
             if (config && typeof config === 'object') {
-                const duration = config.duration as number | undefined;
-                const interval = config.interval as number | undefined;
+                const configObj = config as Record<string, unknown>;
+                const duration = configObj.duration as number | undefined;
+                const interval = configObj.interval as number | undefined;
                 // Strip non-confetti keys
-                const { duration: _d, interval: _i, ...confettiConfig } = config as Record<string, unknown>;
+                const { duration: _d, interval: _i, ...confettiConfig } = configObj;
                 if (duration && interval) {
                     // Repeated bursts
                     const customEnd = Date.now() + duration;
@@ -323,17 +324,18 @@ const handleTriggerEffect: ActionHandler = (action, ctx) => {
 
 const handleShowToast: ActionHandler = (action, ctx) => {
     if (action.payload) {
+        const p = action.payload;
         ctx.showToast({
-            title: action.payload.title || action.payload.message || 'Notification',
-            type: action.payload.type || 'INFO',
-            description: action.payload.description
+            title: String(p.title || p.message || 'Notification'),
+            type: (p.type as ToastOptions['type']) || 'INFO',
+            description: typeof p.description === 'string' ? p.description : undefined
         });
     }
 };
 
 const handleCopyToClipboard: ActionHandler = async (action, ctx) => {
     const text = action.payload?.text;
-    if (text) {
+    if (typeof text === 'string') {
         await navigator.clipboard.writeText(text);
         ctx.showToast({
             title: 'Copied to Clipboard',
@@ -344,12 +346,14 @@ const handleCopyToClipboard: ActionHandler = async (action, ctx) => {
 };
 
 const handleDownload: ActionHandler = (action, ctx) => {
-    const { filename, content } = action.payload || {};
-    const blob = new Blob([content || ''], { type: 'text/plain' });
+    const p = action.payload || {};
+    const filename = typeof p.filename === 'string' ? p.filename : 'download.txt';
+    const content = typeof p.content === 'string' ? p.content : '';
+    const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename || 'download.txt';
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -358,13 +362,14 @@ const handleDownload: ActionHandler = (action, ctx) => {
     ctx.showToast({
         title: 'Download Started',
         type: 'SUCCESS',
-        description: `Saving ${filename || 'file'}...`
+        description: `Saving ${filename}...`
     });
 };
 
 const handleOpenModal: ActionHandler = (action, ctx) => {
-    const { title, content } = action.payload || {};
-    ctx.modalActions.openModal({ title, content: content || action.payload });
+    const p = action.payload || {};
+    const title = typeof p.title === 'string' ? p.title : undefined;
+    ctx.modalActions.openModal({ title, content: p.content || action.payload });
 };
 
 const handleCloseModal: ActionHandler = (_, ctx) => {
@@ -441,10 +446,10 @@ interface UseActionDispatcherDeps {
         canRedo: boolean;
     };
     modalActions: {
-        openModal: (node: { title?: string; content: any }) => void;
+        openModal: (node: { title?: string; content: unknown }) => void;
         closeModal: () => void;
     };
-    onFormSubmit: (formData: Record<string, any>) => Promise<void>;
+    onFormSubmit: (formData: Record<string, unknown>) => Promise<void>;
 }
 
 export const useActionDispatcher = (deps: UseActionDispatcherDeps) => {

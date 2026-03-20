@@ -3,8 +3,10 @@ import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { RenderChildren } from './renderUtils';
 import { useTheme } from '@/components/ThemeContext';
+import type { AccordionProps, AccordionItem } from '@/services/schemas';
+import type { RendererInjectedProps } from '@/types';
 
-export const Accordion = ({ items, variant = 'DEFAULT', onAction, path }: any) => {
+export const Accordion = ({ items, variant = 'DEFAULT', onAction, path }: AccordionProps & RendererInjectedProps) => {
   const [openIndex, setOpenIndex] = React.useState<number | null>(0);
   const { theme } = useTheme();
 
@@ -19,7 +21,7 @@ export const Accordion = ({ items, variant = 'DEFAULT', onAction, path }: any) =
 
   return (
     <div className={`w-full ${containerClass}`}>
-      {items.map((item: any, i: number) => {
+      {items.map((item: AccordionItem, i: number) => {
         const isOpen = openIndex === i;
         const content = Array.isArray(item.content) ? item.content : [];
         const contentPath = path ? `${path}.items.${i}.content` : undefined;

@@ -9,7 +9,7 @@ interface ModeToggleProps {
     setContext: React.Dispatch<React.SetStateAction<UserContext>>;
     metrics: { active: boolean };
     onPlaySound: (sound: string) => void;
-    showToast: (options: any) => void;
+    showToast: (options: { type: string; title: string; description?: string }) => void;
 }
 
 export const ModeToggle: React.FC<ModeToggleProps> = ({
