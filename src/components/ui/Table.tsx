@@ -77,9 +77,11 @@ export const Table = ({ headers, rows, onAction, path }: TableProps & RendererIn
            if (typeof cell === 'number') return String(cell).includes(filterText);
            // Simple check for nested text nodes
            if (cell && typeof cell === 'object') {
-             const obj = cell as Record<string, Record<string, string>>;
-             if (obj.text?.content) return obj.text.content.toLowerCase().includes(filterText.toLowerCase());
-             if (obj.badge?.label) return obj.badge.label.toLowerCase().includes(filterText.toLowerCase());
+             const obj = cell as Record<string, unknown>;
+             const text = obj.text as Record<string, unknown> | undefined;
+             const badge = obj.badge as Record<string, unknown> | undefined;
+             if (typeof text?.content === 'string') return text.content.toLowerCase().includes(filterText.toLowerCase());
+             if (typeof badge?.label === 'string') return badge.label.toLowerCase().includes(filterText.toLowerCase());
            }
            return false;
         })
@@ -95,8 +97,10 @@ export const Table = ({ headers, rows, onAction, path }: TableProps & RendererIn
         // Extract sortable values
         const extractSort = (c: TableCell): string | number => {
           if (c && typeof c === 'object') {
-            const obj = c as Record<string, Record<string, string>>;
-            return obj.text?.content || obj.badge?.label || '';
+            const obj = c as Record<string, unknown>;
+            const text = obj.text as Record<string, unknown> | undefined;
+            const badge = obj.badge as Record<string, unknown> | undefined;
+            return (typeof text?.content === 'string' ? text.content : undefined) || (typeof badge?.label === 'string' ? badge.label : undefined) || '';
           }
           if (typeof c === 'string' || typeof c === 'number') return c;
           return '';

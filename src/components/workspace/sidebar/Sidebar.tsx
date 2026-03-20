@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { UINode, UserContext, Message } from '@/types';
+import type { ToastOptions } from '@/types/actions';
 import { SidebarHeader } from './SidebarHeader';
 import { SidebarTabBar } from './SidebarTabBar';
 import { ChatMessages } from './ChatMessages';
@@ -34,7 +35,7 @@ interface SidebarProps {
     onSubmit: (e: React.FormEvent) => void;
     onSettingsClick: () => void;
     onPlaySound: (sound: string) => void;
-    showToast: (options: { type: string; title: string; description?: string }) => void;
+    showToast: (options: ToastOptions) => void;
     messagesEndRef: React.RefObject<HTMLDivElement>;
     canCancel: boolean;
     onCancel: () => void;

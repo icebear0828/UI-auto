@@ -1,6 +1,7 @@
 import React from 'react';
 import { Activity, Gamepad2, Layout, PenTool, Shapes, Presentation } from 'lucide-react';
 import { UserContext } from '@/types';
+import type { ToastOptions } from '@/types/actions';
 
 interface ModeToggleProps {
     editMode: boolean;
@@ -9,7 +10,7 @@ interface ModeToggleProps {
     setContext: React.Dispatch<React.SetStateAction<UserContext>>;
     metrics: { active: boolean };
     onPlaySound: (sound: string) => void;
-    showToast: (options: { type: string; title: string; description?: string }) => void;
+    showToast: (options: ToastOptions) => void;
 }
 
 export const ModeToggle: React.FC<ModeToggleProps> = ({

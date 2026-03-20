@@ -65,7 +65,7 @@ export const Kanban = ({ columns = [], onAction, path }: KanbanProps & RendererI
       onAction({
         type: 'PATCH_STATE',
         path: `${path}.columns.${colIndex}.items`,
-        payload: cleanItems as unknown as Record<string, unknown>
+        payload: { items: cleanItems }
       });
     }
   };
